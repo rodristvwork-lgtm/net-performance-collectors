@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # kill wget.py if running
-pgrep -f wget.py | xargs kill -9 2>/dev/null
+pgrep -f ping.py | xargs kill -9 2>/dev/null
 
 # current directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,11 +10,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/.venv/bin/activate"
 
 # change where file is located:
-cd wget
+cd ping
 
 # Run directory
-python wget.py
+python ping.py
 
 # deactivate virtual environment
 deactivate
 
+# back to main directory
+cd ..

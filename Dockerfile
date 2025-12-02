@@ -1,29 +1,28 @@
-
 # Image
 FROM python:slim
 
 # Set container name
-LABEL Name="net-performance-container-2"
+LABEL Name="net-performance-container"
 
 # Install required Linux packages
-RUN apt-get update && apt-get install -y \
-    iproute2 \
-    net-tools \
-    iputils-ping \
-    iperf3 \
-    wget \
-    bash \
-    dos2unix \
-    procps \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y iproute2
+RUN	apt-get install -y net-tools
+RUN	apt-get install -y iputils-ping
+RUN	apt-get install -y iperf3
+RUN	apt-get install -y wget
+RUN	apt-get install -y bash
+RUN	apt-get install -y procps
+RUN	apt-get install -y dos2unix
+
 
 # Set working directory inside container
 WORKDIR /app
 
-# Copy requirements if any (currently empty, but future-proof)
+# Copy requirements
 COPY requirements.txt .
 
-# Install Python dependencies (safe even if requirements.txt is empty)
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt || true
 
 # Default command: start bash shell

@@ -18,3 +18,5 @@ python wget.py
 # deactivate virtual environment
 deactivate
 
+# back to main directory
+cd ..
