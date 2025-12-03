@@ -1,7 +1,7 @@
 # net-performance-collectors
 
 ## Linux Environment Installation
-
+set +e
 ### Prerequisites
 
 - Python 3
@@ -26,7 +26,7 @@ pip install -r requirements.txt
 . ping_launcher.sh
 . wget_launcher.sh
 
-## Container Docker Installation
+## Container Docker Installation in Windows environment (Test Purposes)
 
 ### Prerequisites
 
@@ -51,7 +51,7 @@ docker start -ai net-performance-container
  
  - In "app" directory launch the following commands:
 
-python3 -m venv .venv
+python -m venv .venv
 pip install -r requirements.txt
 . init_launcher.sh
 (optional) run net performance scripts e.g iperf_launcher.sh
