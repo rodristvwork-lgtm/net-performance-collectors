@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # kill wget.py if running
-pgrep -f wget.py | xargs kill -9 2>/dev/null
+pgrep -f wget.py | xargs -r kill -9 2>/dev/null
 
 # current directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,13 +10,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/.venv/bin/activate"
 
 # change where file is located:
-cd wget
+cd "$SCRIPT_DIR/wget"
 
 # Run directory
-python wget.py
+"$SCRIPT_DIR/.venv/bin/python" wget.py
 
 # deactivate virtual environment
 deactivate
-
-# back to main directory
-cd ..
