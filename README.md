@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 . init_launcher.sh
 
-## Step 3 Add permissions
+### Step 3 Give permissions
 
 In net-performance-collectors directory launch:
 
