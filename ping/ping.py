@@ -30,7 +30,7 @@ def ping_func():
 			file.write('\n')
 			result = subprocess.run(command, stdout = file)
 			time.sleep(10)
-		"""
+		
 		dir_name = "results"	
 		os.makedirs(dir_name, exist_ok=True)
 		file_path = os.path.join(dir_name, "ping_Ebay_64B_SL_10s.txt")
@@ -42,7 +42,7 @@ def ping_func():
 			file.write('\n')
 			result = subprocess.run(command, stdout = file)
 			time.sleep(10)
-		"""
+		
 		dir_name = "results"	
 		os.makedirs(dir_name, exist_ok=True)
 		file_path = os.path.join(dir_name, "ping_Ebay_1500B_SL_300s.txt")
@@ -54,7 +54,7 @@ def ping_func():
 			file.write('\n')
 			result = subprocess.run(command, stdout = file)
 			time.sleep(10)
-		"""
+		
 		dir_name = "results"	
 		os.makedirs(dir_name, exist_ok=True)
 		file_path = os.path.join(dir_name, "ping_Ebay_64B_SL_300s.txt")
@@ -66,7 +66,7 @@ def ping_func():
 			file.write('\n')
 			result = subprocess.run(command, stdout = file)
 			time.sleep(10)
-		"""
+		
 		dir_name = "results"	
 		os.makedirs(dir_name, exist_ok=True)
 		file_path = os.path.join(dir_name, "ping_Ebay_6400B_SL_300s.txt")
