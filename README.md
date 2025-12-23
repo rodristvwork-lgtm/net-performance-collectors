@@ -57,6 +57,10 @@ In "app" directory launch the following commands:
 
 python -m venv .venv
 
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+
 pip install -r requirements.txt
 
 . init_launcher.sh
