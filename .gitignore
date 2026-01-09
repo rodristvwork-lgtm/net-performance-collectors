@@ -2,6 +2,9 @@
 *.txt
 *.zip
 !requirements.txt
+iperf/results/
+ping/results/
+wget/results/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
