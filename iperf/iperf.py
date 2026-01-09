@@ -16,14 +16,23 @@ def get_local_ip():
 def build_type_for_result(udp, download):
     
     # build type string for filename
-    proto = "udp" if udp else "tcp"
-    direction = "dl" if download else "up"
-    iperf_type = f"{proto}_{direction}"
+    proto = "UDP" if udp else "TCP"
+    direction = "DL" if download else "UP"
+    iperf_type = f"{direction}{proto}"
     
     # prepare result directory if saving  
-    os.makedirs("results", exist_ok=True)
-    today = datetime.now().strftime("%H_%M_%d_%m_%y")
-    filename = f"results/iperf_result_time_{today}_{iperf_type}.txt"
+    os.makedirs(f"results/{proto}", exist_ok=True)
+    today = datetime.now().strftime("%m%y")
+    base_name = f"{iperf_type}_iperf_{today}_"
+    
+    # find next avaiable counter
+    counter = 1
+    while True:
+        filename = f"results/{proto}/{base_name}{counter}.txt"
+        if not os.path.exists(filename):
+            break
+        counter += 1
+    
     
     return filename
 
@@ -83,12 +92,12 @@ def run_iperf(server_ip, duration, udp, download, bandwidth = None, save = False
 if __name__ == "__main__":
     
     # TCP DOWNLOAD
-    run_iperf("178.215.228.109", duration=50, udp=False, download=True, save=True)
+    run_iperf("178.215.228.109", duration=90, udp=False, download=True, save=True)
     # TCP UPLOAD
-    run_iperf("178.215.228.109", duration=50, udp= False, download=False, save= True )
+    run_iperf("178.215.228.109", duration=90, udp= False, download=False, save= True )
     # UDP DOWNLOAD
-    run_iperf("178.215.228.109", duration=50, udp= True, download=True, bandwidth="10M", save= True)
+    run_iperf("178.215.228.109", duration=90, udp= True, download=True, bandwidth="10M", save= True)
     # UDP DOWNLOAD
-    run_iperf("178.215.228.109", duration=50, udp= True, download= False, bandwidth="10M", save= True)
+    run_iperf("178.215.228.109", duration=90, udp= True, download= False, bandwidth="10M", save= True)
 
     
