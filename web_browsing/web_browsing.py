@@ -1,8 +1,5 @@
-"""Version 1.4"""
 import os
 import json
-import pathlib
-import argparse
 import time
 import csv
 import logging

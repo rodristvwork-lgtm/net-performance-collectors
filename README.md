@@ -11,21 +11,18 @@
 - dos2unix
 
 ### step 1 - install Python Environment and Requirements
-
 python -m venv .venv
-
 source .venv/bin/activate
-
 pip install -r requirements.txt
 
-### step 2 - format Bash Scripts
+### step 2 - download Firefox driver
+python download_firefox_driver.py
 
+### step 3 - format Bash Scripts
 . init_launcher.sh
 
-### step 3 - give permissions
-
+### step 4 - give permissions
 In net-performance-collectors directory launch:
-
 chmod -R 777 .
 
 
