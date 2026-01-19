@@ -1,0 +1,5 @@
+debugpy
+selenium
+logging
+config
+requests
