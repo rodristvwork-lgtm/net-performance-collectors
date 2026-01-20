@@ -181,8 +181,15 @@ def make_cmd(cmd, sys=False):
 def _write_results(results: List[dict]) -> None:
     """writes results to file"""
 
+    results_path = config.settings["results_file_name"]
+    results_dir = os.path.dirname(results_path)
     #if file doesnt exist, then write_headers = true
-    write_headers: bool = not os.path.isfile(config.settings["results_file_name"])
+    
+    if results_dir and not os.path.exists(results_dir): 
+        os.makedirs(results_dir, exist_ok=True)
+        
+    write_headers: bool = not os.path.isfile(results_path)
+    
     with open(config.settings["results_file_name"], mode='a') as csv_file:
         result: dict
         writer = csv.DictWriter(csv_file, fieldnames=results[0].keys())
