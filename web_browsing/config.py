@@ -37,9 +37,8 @@ def get_nodename() -> str:
 
     name: str
     try:
-        name = "TP1_A42"
-    except Exception:
         name = settings["host"]["default_node_name"]
+    except Exception:
         logging.error(f"failed to get host name, default: {name}")
     return name
 
