@@ -86,13 +86,24 @@ def _get_modem_info(to_ret):
         to_ret["outroute_freq"] = modem.get_outroute_id()
     return to_ret
 
-def _load_single_website(url: str) -> dict:
+
+def _load_single_website(url: str) -> dict: # 3.  here occurs the magic, fetch web browsing data only for 1 site
+    
     """returns loading time of single website"""
-    to_ret = {"website": url, "host_name": config.get_nodename()}
-    driver = None # <-- critical fix    
+    
+    to_ret = {
+                "website": url,
+                "host_name": config.get_nodename()
+            }
+    
+    driver = None  
+    
     try:
         to_ret["ipgw"], to_ret["esn"], to_ret["siteid"], to_ret["beam"], to_ret["outroute_freq"] = 'NA', 'NA', 'NA', 'NA', 'NA'
-        to_ret = _get_modem_info(to_ret)
+        
+        #to_ret = _get_modem_info(to_ret) # REPLACED
+        to_ret = config.get_modem_info(to_ret) # NEW
+        
         logging.info(f"loading {url}")
         
         #### Added for Firefox new setup
@@ -130,8 +141,8 @@ def _load_single_website(url: str) -> dict:
         to_ret["dom_Interactive_time"] = domInteractive - navigation_start
         logging.info("start traceroute")
         to_ret = _traceroute_website(to_ret, url)
-        to_ret["Hardware_type"] = modem.get_hw_type()
-        to_ret["Software_version"] = modem.get_sw_type()
+        to_ret["Hardware_type"] = modem.get_hw_type()           # TODO TO-REPLACE
+        to_ret["Software_version"] = modem.get_sw_type()        # TODO TO-REPLACE
         to_ret["Environment"] = "prod"
         logging.info("test done")
         

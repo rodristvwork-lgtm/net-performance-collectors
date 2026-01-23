@@ -43,6 +43,19 @@ def get_nodename() -> str:
         logging.error(f"failed to get host name, default: {name}")
     return name
 
+def get_modem_info(to_ret):
+    
+    try:
+        to_ret["ipgw"] = settings["host"]["ipgw"]
+        to_ret["esn"] = settings["host"]["esn"]
+        to_ret["siteid"] = settings["host"]["siteid"]
+        to_ret["beam"] = settings["host"]["beam"]
+        to_ret["outroute_freq"] = settings["host"]["outroute_freq"]
+
+    except Exception:
+        logging.error(f"failed to get modem info")
+    return to_ret
+
 #set config when imported first time
 # config.py
 
