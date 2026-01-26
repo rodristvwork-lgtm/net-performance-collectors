@@ -15,10 +15,12 @@
   "geckodriver_path": "../geckodriver",
   "host": {
     "default_node_name": "Raspberry",
-    "ipgw": "ip_gw_Rasp",
-    "esn":"esn_rasp",
-    "siteid":"siteid_rasp",
-    "beam":"beam_rasp",
-    "outroute_freq":"outroute_rasp"
+    "ipgw": "ip_pippo",
+    "esn":"esn_pippo",
+    "siteid":"siteid_pippo",
+    "beam":"beam_pippo",
+    "outroute_freq":"outroute_pippo",
+    "Hardware_type": "Raspberry_hw",
+    "Software_version": "Raspberry_sw"
   }
 }

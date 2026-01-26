@@ -4,11 +4,9 @@ import time
 import csv
 import logging
 import config
-import modem
 from subprocess import PIPE, Popen
 from platform import system
-
-from typing import Dict, List
+from typing import List
 from selenium.webdriver import Firefox
 from datetime import datetime
 from selenium.webdriver.firefox.service import Service
@@ -25,6 +23,7 @@ def _test_single_metric(driver, metrics):
     return to_ret
 
 def _traceroute_website(to_ret, url):
+    
     to_ret["total_time"] = -1
     to_ret["hop_number"] = -1
     to_ret["trace_dict"] = {}
@@ -37,7 +36,6 @@ def _traceroute_website(to_ret, url):
                 ip = lin.split("  ")[1]
                 if ip != "*":
                     time_hop = float(lin.split("  ")[2].split(" ")[0])
-                    #total_time += time_hop
                     to_ret["trace_dict"][ip] = time_hop
                 else:
                     to_ret["trace_dict"]['*' + str(ast_count)] = '*'
@@ -76,18 +74,7 @@ def _traceroute_website(to_ret, url):
             to_ret["hop_number"] = len(lines[4:-3])
     return to_ret
 
-def _get_modem_info(to_ret):
-    ipgw = modem.get_ipgw()
-    if ipgw != 'NA':
-        to_ret["ipgw"] = ipgw
-        to_ret["esn"] = modem.get_esn()
-        to_ret["siteid"] = modem.get_siteid()
-        to_ret["beam"] = modem.get_beam()
-        to_ret["outroute_freq"] = modem.get_outroute_id()
-    return to_ret
-
-
-def _load_single_website(url: str) -> dict: # 3.  here occurs the magic, fetch web browsing data only for 1 site
+def _load_single_website(url: str) -> dict:
     
     """returns loading time of single website"""
     
@@ -99,14 +86,11 @@ def _load_single_website(url: str) -> dict: # 3.  here occurs the magic, fetch w
     driver = None  
     
     try:
+        
         to_ret["ipgw"], to_ret["esn"], to_ret["siteid"], to_ret["beam"], to_ret["outroute_freq"] = 'NA', 'NA', 'NA', 'NA', 'NA'
-        
-        #to_ret = _get_modem_info(to_ret) # REPLACED
-        to_ret = config.get_modem_info(to_ret) # NEW
-        
+        to_ret = config.get_modem_info(to_ret)
         logging.info(f"loading {url}")
         
-        #### Added for Firefox new setup
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
@@ -124,7 +108,6 @@ def _load_single_website(url: str) -> dict: # 3.  here occurs the magic, fetch w
         driver.set_page_load_timeout(config.settings["website_loading_timeout"])
         driver.implicitly_wait(config.settings["website_loading_timeout"])
      
-        ####     end added for Firefox new setup    
         time.sleep(config.settings["sleep_before_load"])
         driver.get(url)
         to_ret["first_contentful_paint"] = _test_single_metric(driver, "first_contentful_paint")
@@ -134,15 +117,14 @@ def _load_single_website(url: str) -> dict: # 3.  here occurs the magic, fetch w
         dom_complete = _test_single_metric(driver, "dom_complete_cmd")
         domInteractive = _test_single_metric(driver, "domInteractive_cmd")
         response_start = _test_single_metric(driver, "response_start_cmd")
-        # prova1 = driver.execute_script(config.settings["prova"])    
         to_ret["load_time"] = load_complete - navigation_start
         to_ret["first_byte_time"] = response_start - navigation_start
         to_ret["dom_content_loaded"] = dom_complete - navigation_start
         to_ret["dom_Interactive_time"] = domInteractive - navigation_start
         logging.info("start traceroute")
         to_ret = _traceroute_website(to_ret, url)
-        to_ret["Hardware_type"] = modem.get_hw_type()           # TODO TO-REPLACE
-        to_ret["Software_version"] = modem.get_sw_type()        # TODO TO-REPLACE
+        to_ret["Hardware_type"] = config.get_hw_type()           
+        to_ret["Software_version"] = config.get_sw_type()
         to_ret["Environment"] = "prod"
         logging.info("test done")
         
@@ -154,7 +136,7 @@ def _load_single_website(url: str) -> dict: # 3.  here occurs the magic, fetch w
         
         if driver is not None:
             try:
-                driver.quit()   # safer than close()
+                driver.quit()
             except Exception:
                 pass
 
@@ -166,6 +148,7 @@ def _load_single_website(url: str) -> dict: # 3.  here occurs the magic, fetch w
 
 def make_cmd(cmd, sys=False):
     '''Execute os cmd'''
+    
     response = {}
     try:
         logging.info(f"Eseguo comando: {cmd}")
@@ -175,8 +158,7 @@ def make_cmd(cmd, sys=False):
             cmd_out = str(out_err[0])[2:-1].replace("\\t", "\t").replace("\\n", "\n").replace("\\r", "\r")
             cmd_err = str(out_err[1])[2:-1].replace("\\t", "\t").replace("\\n", "\n").replace("\\r", "\r")
             logging.info(f"Return Code: {cmd_exec.returncode}")
-            # logging.info(f"Output: {cmd_out}")
-            # logging.info(f"Error: {cmd_err}")
+            
             if cmd_err == "" and cmd_exec.returncode != 0:
                 cmd_err = cmd_out
             if cmd_exec.returncode == 0:
@@ -194,8 +176,7 @@ def _write_results(results: List[dict]) -> None:
 
     results_path = config.settings["results_file_name"]
     results_dir = os.path.dirname(results_path)
-    #if file doesnt exist, then write_headers = true
-    
+        
     if results_dir and not os.path.exists(results_dir): 
         os.makedirs(results_dir, exist_ok=True)
         
@@ -206,7 +187,7 @@ def _write_results(results: List[dict]) -> None:
         writer = csv.DictWriter(csv_file, fieldnames=results[0].keys())
         if write_headers:
             writer.writeheader()
-        #write rows
+
         for result in results:
             writer.writerow(result)
         logging.info(f"{len(results)} tests written to results file")
@@ -215,7 +196,6 @@ def _read_input_parameters() -> List[str]:
     """returns list representing input params
     [google.it, facebook.com]"""
 
-    #read input file
     websites: List[str]
     try:
         with open(config.settings['input_file_path']) as json_file:

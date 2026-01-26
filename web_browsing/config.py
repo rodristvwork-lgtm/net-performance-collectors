@@ -4,8 +4,6 @@ import json
 
 from datetime import datetime
 
-# how see ig logging of python is installed
-#variable used by various modules to read app settings
 settings: dict
 
 def _init_logging() -> None:
@@ -55,8 +53,24 @@ def get_modem_info(to_ret):
         logging.error(f"failed to get modem info")
     return to_ret
 
-#set config when imported first time
-# config.py
+def get_hw_type():
+    """returns Hardware type"""
+    hw_type: str
+    try:
+        hw_type = settings["host"]["Hardware_type"]
+    except Exception:
+        logging.error(f"failed to get Hardware type, default: {hw_type}")
+    return hw_type   
+
+def get_sw_type():
+    """returns Software type"""
+    sw_type: str
+    try:
+        sw_type = settings["host"]["Software_version"]
+    except Exception:
+        logging.error(f"failed to get Software type, default: {sw_type}")
+    return sw_type
+
 
 def _init():
     _read_settings()
@@ -66,9 +80,7 @@ def _init():
         ts=datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     )
 
-# run automatically when imported
 _init()
 
-# optional: run again when executed directly
 if __name__ == "__main__":
     print("Config initialized")
