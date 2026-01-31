@@ -1,10 +1,12 @@
 # Ignore Test performance results
 *.txt
 *.zip
+*.csv
 !requirements.txt
 iperf/results/
 ping/results/
 wget/results/
+geckodriver
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

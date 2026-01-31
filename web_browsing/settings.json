@@ -1,0 +1,26 @@
+{
+  "start_time_cmd": "return window.performance.timing.navigationStart",
+  "end_time_cmd": "return window.performance.timing.loadEventEnd",
+  "dom_complete_cmd": "return window.performance.timing.domContentLoadedEventEnd",
+  "domInteractive_cmd": "return window.performance.timing.domInteractive",
+  "response_start_cmd": "return window.performance.timing.responseStart",
+  "first_contentful_paint": "return window.performance.getEntriesByName('first-contentful-paint')[0].startTime;",
+  "total_blocking_time": "var tot = 0; window.performance.getEntriesByType('resource').forEach(function (resource) {if (resource['duration'] > 50) tot = tot + resource['duration']}); return tot",
+  "results_file_name": "results/{hostname}_{ts}_results.csv",
+  "input_file_path": "input.json",
+  "log_file_path": "loading.log",
+  "sleep_before_load": 10,
+  "failed_test_value": -1,
+  "website_loading_timeout": 60,
+  "geckodriver_path": "../geckodriver",
+  "host": {
+    "default_node_name": "Raspberry",
+    "ipgw": "ip_pippo",
+    "esn":"esn_pippo",
+    "siteid":"siteid_pippo",
+    "beam":"beam_pippo",
+    "outroute_freq":"outroute_pippo",
+    "Hardware_type": "Raspberry_hw",
+    "Software_version": "Raspberry_sw"
+  }
+}
