@@ -19,6 +19,12 @@ RUN apt-get install -y firefox-esr
 # Set working directory inside container
 WORKDIR /app
 
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt || true
+
 # Expose ports
 EXPOSE 5000
 EXPOSE 5678
