@@ -32,10 +32,10 @@ chmod -R 777 .
 Docker version > 29.0
 
 ### step 1 - build Image using Dockerfile
-docker build -t net-performance-collectors-image:1.1 .
+docker build -t net-performance-collectors-image:1.2 .
 
 ### step 2 - create container with mounted directory (using this net-performance-collectors directory)
-docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -v "$(Get-Location):/app" net-performance-collectors-image:1.1 bash
+docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -v "$(Get-Location):/app" net-performance-collectors-image:1.2 bash
 
 exit
 
