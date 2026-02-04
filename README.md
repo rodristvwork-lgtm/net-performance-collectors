@@ -17,6 +17,8 @@
 - pip install -r requirements.txt
 
 ### step 2 - download/update Firefox driver ("geckodriver")
+(keep active python environment)
+
 python download_firefox_driver.py
 
 ### step 3 - format Bash Scripts for Crontab jobs
