@@ -3,7 +3,6 @@
 ## A) Linux Environment Installation
 
 ### prerequisites
-
 - Python 3
 - Iperf3
 - net-tools or iproute2
@@ -11,20 +10,20 @@
 - dos2unix
 
 ### step 1 - install Python Environment and Requirements
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
 
-### step 2 - download Firefox driver
+- python -m venv .venv
+- source .venv/bin/activate
+- python -m pip install --upgrade pip
+- pip install -r requirements.txt
+
+### step 2 - download/update Firefox driver ("geckodriver")
 python download_firefox_driver.py
 
-### step 3 - format Bash Scripts
+### step 3 - format Bash Scripts for Crontab jobs
 . init_launcher.sh
 
-### step 4 - give permissions
-In net-performance-collectors directory launch:
+### step 4 - give permissions for Crontab jobs
 chmod -R 777 .
-
 
 ## B) Docker Container Installation
 
