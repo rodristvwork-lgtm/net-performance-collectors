@@ -17,7 +17,7 @@
 - pip install -r requirements.txt
 
 ### step 2 - download/update Firefox driver ("geckodriver")
-(keep active python environment)
+(keep active Python environment)
 
 python download_firefox_driver.py
 
@@ -56,6 +56,11 @@ python -m pip install --upgrade pip
 
 ####  step 4.2  - install requirements
 pip install -r requirements.txt
+
+####  step 4.  download/update Firefox driver ("geckodriver")
+(keep active Python environment)
+
+python download_firefox_driver.py
 
 ### step 5 - Debug
 python -m debugpy --listen 0.0.0.0:5678 --wait-for-client "filename".py
