@@ -8,19 +8,21 @@ import traceback
 import time
 import os
 
-consent_button_xpath_homepage ="//input[@type='submit' and @value='I agree']"
 video_links_class_name = "yt-simple-endpoint.ytd-thumbnail"
 consent_button_xpath = "//button[@aria-label='Accept the use of cookies and other data for the purposes described']"
 ads_button_selectors = [".ytp-skip-ad button"]
-mute_button_class = "ytp-mute-button"
-replay_xpath = '//*[@title="Replay"]'
-
 start_time = int(time.time())
+
+## BIG FUNCTION
 
 def play():
     homepage = "https://www.youtube.com/watch?v=PdzOkN9_F9A"
     print(f"RUN: {start_time} | {homepage}")
+
+    ## BIG TRY CATCH
     try:
+        
+        ## BLOCK 1 - DRIVER SETTINGS
         srv = webdriver.FirefoxService(os.path.join("driver", "geckodriver"))
         opt = webdriver.FirefoxOptions()
         opt.set_preference(
@@ -45,7 +47,7 @@ def play():
         time.sleep(3)
         driver.get(homepage)
     
-        
+        ## BLOCK 2 - BIG SUB TRY EXECEPT - 1
         try:
             consent_overlay = WebDriverWait(driver, 15).until(
                 EC.presence_of_element_located((By.ID, 'dialog'))
@@ -59,7 +61,10 @@ def play():
                 print(f'RUN: {start_time} | Accepted cookes')
         except Exception:
             print(f'RUN: {start_time} | Cookie modal missing')
-            
+        
+        
+        ## connectors before launch
+
         WebDriverWait(driver, 15).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1.ytd-watch-metadata'))
             )
@@ -67,7 +72,8 @@ def play():
             
         print(f"RUN: {start_time} | ts {int(time.time())} Video should start shortly")
      
-        
+        ## BLOCK 3 - BIG SUB TRY EXECEPT - 2
+
         try:
             movie_player = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "movie_player"))
@@ -77,6 +83,9 @@ def play():
             print(f" run  {start_time}-> YouTube player not found after waiting")
             driver.save_screenshot("debug_no_movie_player.png")
             raise
+        
+        ## connectors before launch
+        
         hover = ActionChains(driver).move_to_element(movie_player)
         hover.perform()
         ActionChains(driver).context_click(movie_player).perform()
@@ -118,6 +127,9 @@ def play():
 
         file_path = "youtube_stats.txt"
         first_line = None
+        
+        ## IF STATEMENT of BIG TRY CATCH
+
         if not os.path.isfile(file_path):
             first_line = f"{';'.join(headers)}\n"
         with open(file_path, 'a+') as f:
@@ -288,6 +300,7 @@ def play():
                     print(f"RUN: {start_time} | ts {int(time.time())} Error {traceback.format_exc()}")
 
         print(f"RUN: {start_time} | Ending")
+        
     finally:
         try:
             driver.close()
@@ -299,6 +312,8 @@ def play():
         except:
             pass
     return True
+
+## FUNCTION 1
 
 def change_resolution(driver):
     """ to be tested """
@@ -337,6 +352,7 @@ def change_resolution(driver):
 
         print(f'RUN: {start_time} | Resolution {resolution} not available yet')
 
+## FUNCTION 2
 
 def click_skip_adds(driver):
     for selector in ads_button_selectors:
