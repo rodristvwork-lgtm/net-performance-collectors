@@ -1,13 +1,14 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By # type: ignore
+from selenium.webdriver.support.ui import WebDriverWait # type: ignore
+from selenium.webdriver import ActionChains # type: ignore
+from selenium.webdriver.support import expected_conditions as EC # type: ignore
+from selenium.common.exceptions import NoSuchElementException # type: ignore
 import traceback
 import time
 import os
 from utils import change_resolution , click_skip_adds
 from browser import get_driver_settings
+from youtube import accept_cookies
 
 video_links_class_name = "yt-simple-endpoint.ytd-thumbnail"
 consent_button_xpath = "//button[@aria-label='Accept the use of cookies and other data for the purposes described']"
@@ -24,22 +25,11 @@ def play():
         driver = get_driver_settings()
         
         ## BLOCK 2 - BIG SUB TRY EXECEPT - 1
-        try:
-            consent_overlay = WebDriverWait(driver, 15).until(
-                EC.presence_of_element_located((By.ID, 'dialog'))
-            )
-            time.sleep(2)
-
-            consent_buttons = consent_overlay.find_elements(By.CSS_SELECTOR, '.eom-buttons button.yt-spec-button-shape-next')
-            if len(consent_buttons) > 1:
-                accept_all_button = consent_buttons[1]
-                accept_all_button.click()
-                print(f'RUN: {start_time} | Accepted cookes')
-        except Exception:
-            print(f'RUN: {start_time} | Cookie modal missing')
+            
+        # accept cookies block/function
+        accept_cookies(driver ,start_time)
         
-        
-        ## CONNECTORS BEFORE CONTINUE FLOW
+        ## CONNECTORS BEFORE CONTINUE FLOW - let it here
 
         WebDriverWait(driver, 15).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1.ytd-watch-metadata'))
@@ -49,19 +39,21 @@ def play():
         print(f"RUN: {start_time} | ts {int(time.time())} Video should start shortly")
      
         ## BLOCK 3 - BIG SUB TRY EXECEPT - 2
-
+        # prepare video player
         try:
             movie_player = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "movie_player"))
-        )   
+            )   
             print(f" run {start_time}-> YouTube player loaded")
         except Exception:
             print(f" run  {start_time}-> YouTube player not found after waiting")
             driver.save_screenshot("debug_no_movie_player.png")
             raise
         
+        
         ## connectors before launch
         
+        # play video 
         hover = ActionChains(driver).move_to_element(movie_player)
         hover.perform()
         ActionChains(driver).context_click(movie_player).perform()
