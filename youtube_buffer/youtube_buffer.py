@@ -1,4 +1,3 @@
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
@@ -8,6 +7,7 @@ import traceback
 import time
 import os
 from utils import change_resolution , click_skip_adds
+from browser import get_driver_settings
 
 video_links_class_name = "yt-simple-endpoint.ytd-thumbnail"
 consent_button_xpath = "//button[@aria-label='Accept the use of cookies and other data for the purposes described']"
@@ -15,39 +15,14 @@ ads_button_selectors = [".ytp-skip-ad button"]
 start_time = int(time.time())
 
 ## BIG FUNCTION
-
 def play():
-    homepage = "https://www.youtube.com/watch?v=PdzOkN9_F9A"
-    print(f"RUN: {start_time} | {homepage}")
-
+    
     ## BIG TRY CATCH
     try:
         
         ## BLOCK 1 - DRIVER SETTINGS
-        srv = webdriver.FirefoxService(os.path.join("driver", "geckodriver"))
-        opt = webdriver.FirefoxOptions()
-        opt.set_preference(
-            "general.useragent.override",
-             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                                "(KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36")
-        profile_path = "/home/situser/.mozilla/firefox/qnjqjqw5.default-release"
-        opt.set_preference("profile", profile_path)
-        opt.set_preference("layers.acceleration.disabled", True)
-        opt.set_preference("gfx.canvas.azure.accelerated", False)
-        opt.set_preference("dom.webdriver.enabled", False)
-        opt.set_preference('useAutomationExtension', False)
-        opt.set_preference("security.mixed_content.block_active_content", False)
-        opt.set_preference("security.mixed_content.block_display_content", False)
-        opt.add_argument("--headless")
-        opt.add_argument("--no-sandbox")
-        opt.add_argument("--disable-dev-shm-usage")
-        opt.set_preference("security.sandbox.content.level", 0)
-
-        driver = webdriver.Firefox(service=srv, options=opt)
-        driver.maximize_window()
-        time.sleep(3)
-        driver.get(homepage)
-    
+        driver = get_driver_settings()
+        
         ## BLOCK 2 - BIG SUB TRY EXECEPT - 1
         try:
             consent_overlay = WebDriverWait(driver, 15).until(
@@ -64,7 +39,7 @@ def play():
             print(f'RUN: {start_time} | Cookie modal missing')
         
         
-        ## connectors before launch
+        ## CONNECTORS BEFORE CONTINUE FLOW
 
         WebDriverWait(driver, 15).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1.ytd-watch-metadata'))
@@ -313,11 +288,6 @@ def play():
         except:
             pass
     return True
-
-## FUNCTION 1
-
-## FUNCTION 2
-
 
 if __name__ == "__main__":
     retry = 0
