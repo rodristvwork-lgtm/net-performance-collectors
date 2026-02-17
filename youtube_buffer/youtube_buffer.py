@@ -20,44 +20,35 @@ def play():
     
     ## BIG TRY CATCH
     try:
-        
         ## BLOCK 1 - DRIVER SETTINGS
         driver = get_driver_settings()
         
-        ## BLOCK 2 - BIG SUB TRY EXECEPT - 1
-            
-        # accept cookies block/function
+        ## BLOCK 2 - ACCEPT COOKIES FUNCTION
         accept_cookies(driver ,start_time)
         
-        ## CONNECTORS BEFORE CONTINUE FLOW - let it here
-
+        ## CONNECTORS BEFORE CONTINUE FLOW
         WebDriverWait(driver, 15).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1.ytd-watch-metadata'))
-            )
+            EC.visibility_of_element_located((By.CSS_SELECTOR, 'h1.ytd-watch-metadata')))
         time.sleep(1)
-            
         print(f"RUN: {start_time} | ts {int(time.time())} Video should start shortly")
      
-        ## BLOCK 3 - BIG SUB TRY EXECEPT - 2
         # prepare video player
         try:
+        
             movie_player = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, "movie_player"))
-            )   
+            EC.presence_of_element_located((By.ID, "movie_player")))   
             print(f" run {start_time}-> YouTube player loaded")
+        
         except Exception:
+            
             print(f" run  {start_time}-> YouTube player not found after waiting")
             driver.save_screenshot("debug_no_movie_player.png")
             raise
         
-        
-        ## connectors before launch
-        
-        # play video 
+        # play video
         hover = ActionChains(driver).move_to_element(movie_player)
         hover.perform()
         ActionChains(driver).context_click(movie_player).perform()
-        
         time.sleep(2)
 
         DIV_TO_KEY = {
@@ -71,10 +62,9 @@ def play():
             '10': "Network Activity", 
             '11': "Buffer Health",
             '12': "Live Latency",
-            '15': "Mystery Text",
-
-
+            '15': "Mystery Text"
         }
+        
         keys = [
             "Video ID / sCPN",
             "Viewport / Frames",
@@ -92,18 +82,18 @@ def play():
         headers = ['script_time', 'start_time', 'Video ID', 'Frames', 'Current Res', 'Connection Speed', 'Network Activity', 'Buffer Health', 'time', 'i']
         video_id = "PdzOkN9_F9A"
         last_not_found_div_id = ''
-
         file_path = "youtube_stats.txt"
         first_line = None
         
-        ## IF STATEMENT of BIG TRY CATCH
+        ## IF STATEMENT 1 - FIRST GRADE of BIG TRY CATCH
 
         if not os.path.isfile(file_path):
             first_line = f"{';'.join(headers)}\n"
+            
         with open(file_path, 'a+') as f:
+            
             if first_line is not None:
                 f.write(first_line)
-
             j = 0
             i = 0
             factor = float(0)
@@ -114,7 +104,12 @@ def play():
             last_buffer = 0.0
             last_res = ''
             
+            #  IF STATEMENT 1 - its big while
+            
+            #TODO create a new function that replaces this While part
+            
             while j < 10000:
+                           
                 try:
                     hover.perform()
                     stat_dict = {}
@@ -175,7 +170,7 @@ def play():
                             time.sleep(2)
                         except:
                             pass
-
+                        
                         continue
 
                     stat_dict['Network Activity'] = stat_dict['Network Activity'].rstrip(' KB')
@@ -202,9 +197,11 @@ def play():
                         last_ad_ts = 0.0
 
                     if video_id not in stat_dict['Video ID'] and ts < last_ts:
-                        ts = last_ts + ts  
+                        ts = last_ts + ts
+                          
                     if '@' not in stat_dict['Current Res'] or '0x0@' in stat_dict['Current Res']:
-                        stat_dict['Current Res'] = last_res  
+                        stat_dict['Current Res'] = last_res
+                         
                     if video_id in stat_dict['Video ID']:
                         last_res = stat_dict['Current Res']
 
@@ -230,6 +227,7 @@ def play():
                             factor = factor-0.1
 
                         last_ts = ts
+                        
                     else:
                         if ts < last_ad_ts and last_ad_ts > 0.0:
                             print(f"RUN: {start_time} | {stat_dict['Video ID']} | ts {stat_dict['script_time']} | Vid time invalid: {ts} (last: {last_ad_ts}) | cur res: {stat_dict['Current Res']}")
@@ -264,8 +262,11 @@ def play():
                         sleep_time = sleep_time-factor
 
                     time.sleep(sleep_time)
+                          
                 except Exception as e:
                     print(f"RUN: {start_time} | ts {int(time.time())} Error {traceback.format_exc()}")
+                    
+            # end BIG while        
 
         print(f"RUN: {start_time} | Ending")
         
@@ -274,7 +275,7 @@ def play():
             driver.close()
         except:
             pass
-
+        
         try:
             driver.quit()
         except:
@@ -282,6 +283,7 @@ def play():
     return True
 
 if __name__ == "__main__":
+    
     retry = 0
     while retry < 5:
         try:
