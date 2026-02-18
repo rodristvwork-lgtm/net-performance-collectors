@@ -1,6 +1,6 @@
 import os
 import subprocess
-import requests
+import requests # type: ignore
 import tarfile
 import io
 import platform

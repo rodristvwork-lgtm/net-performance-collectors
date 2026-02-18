@@ -1,6 +1,6 @@
-from selenium.webdriver.common.by import By # type: ignore
-from selenium.webdriver.support.ui import WebDriverWait # type: ignore
-from selenium.webdriver.support import expected_conditions as EC # type: ignore
+from selenium.webdriver.common.by import By                         # type: ignore
+from selenium.webdriver.support.ui import WebDriverWait             # type: ignore
+from selenium.webdriver.support import expected_conditions as EC    # type: ignore
 import time
 
 # Accept cookies statements:

@@ -1,6 +1,6 @@
 import time
-from selenium.webdriver.common.by import By # type: ignore
-from selenium.common.exceptions import NoSuchElementException # type: ignore
+from selenium.webdriver.common.by import By                     # type: ignore
+from selenium.common.exceptions import NoSuchElementException   # type: ignore
 
 start_time = int(time.time())
 ads_button_selectors = [".ytp-skip-ad button"]

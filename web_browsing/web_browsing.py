@@ -7,10 +7,10 @@ import config
 from subprocess import PIPE, Popen
 from platform import system
 from typing import List
-from selenium.webdriver import Firefox
+from selenium.webdriver import Firefox                      # type: ignore
 from datetime import datetime
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service      # type: ignore
+from selenium.webdriver.firefox.options import Options      # type: ignore
 
 
 def _test_single_metric(driver, metrics):
