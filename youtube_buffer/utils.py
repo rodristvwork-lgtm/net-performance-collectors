@@ -1,15 +1,14 @@
 import time
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By # type: ignore
+from selenium.common.exceptions import NoSuchElementException # type: ignore
 
 start_time = int(time.time())
 ads_button_selectors = [".ytp-skip-ad button"]
 
 
 ## FUNCTION 1
-
 def change_resolution(driver):
-    """ to be tested """
+
     resolution = "1080p"
     resolution2 = "720p"
     print(f"RUN: {start_time} | Selecting resolution {resolution}")
@@ -44,9 +43,9 @@ def change_resolution(driver):
                 break
 
         print(f'RUN: {start_time} | Resolution {resolution} not available yet')
-
+        
+        
 ## FUNCTION 2
-
 def click_skip_adds(driver):
     
     for selector in ads_button_selectors:
