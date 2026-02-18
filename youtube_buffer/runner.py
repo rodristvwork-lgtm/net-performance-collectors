@@ -4,27 +4,44 @@ import traceback
 import time
 from utils import change_resolution , click_skip_adds
 
+def perform_buffer_video(f,                         # this one is to keep                     
+                         hover,                     # this one is to keep
+                         driver,                    # this one is to keep
+                         video_id,                  # this one is to keep
+                         start_time,                # this one is to keep
+                         last_video_id              # this one is to keep
+                         ):
+    
+    keys = [
+            "Video ID / sCPN",
+            "Viewport / Frames",
+            "Current / Optimal Res",
+            "Volume / Normalized",
+            "Codecs",
+            "Color",
+            "Connection Speed", 
+            "Network Activity", 
+            "Buffer Health",
+            "Live Latency",
+            "Mystery Text"
+        ]
 
-def perform_buffer_video(j ,i ,f,
-                                hover,
-                                driver,
-                                video_id,
-                                last_not_found_div_id,
-                                start_time,
-                                keys ,
-                                headers,
-                                factor,
-                                enable_skipping,
-                                last_video_id ,
-                                last_ad_ts,
-                                last_ts,
-                                last_buffer,
-                                last_res):
+    headers = ['script_time', 'start_time', 'Video ID', 'Frames', 'Current Res', 'Connection Speed', 'Network Activity', 'Buffer Health', 'time', 'i']
+    last_not_found_div_id = ''
+          
+    j = 0
+    i = 0
+    factor = float(0)
+    enable_skipping = True
+    last_ad_ts = 0.0
+    last_ts = 0.0
+    last_buffer = 0.0
+    last_res = ''
     
     while j < 10000:
                            
         try:
-            
+                       
             hover.perform()
             stat_dict = {}
             not_found_div_id = []
