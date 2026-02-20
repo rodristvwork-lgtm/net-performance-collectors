@@ -33,15 +33,16 @@ chmod -R 777 .
 Docker version > 29.0
 
 ### step 1 - build Image using Dockerfile
-docker build -t net-performance-collectors-image:1.2 .
+docker build -t net-performance-collectors-image:1.3 .
 
 ### step 2 - create container with mounted directory (using this net-performance-collectors directory)
-docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -v "$(Get-Location):/app" net-performance-collectors-image:1.2 bash
-
-exit
+docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -p 5900:5900 -v "$(Get-Location):/app" net-performance-collectors-image:1.3
 
 ### step 3 - access to Contatiner and create enviroment
 docker start -ai net-performance-collectors-container
+
+### step 3.1 - access with other console
+docker exec -it net-performance-collectors-container bash
 
 ### step 4 - Python libraries intallation
 
@@ -56,6 +57,9 @@ python -m pip install --upgrade pip
 
 ####  step 4.2  - install requirements
 pip install -r requirements.txt
+
+#### (optional - all in one line)
+python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt
 
 ####  step 4.  download/update Firefox driver ("geckodriver")
 (keep active Python environment)
