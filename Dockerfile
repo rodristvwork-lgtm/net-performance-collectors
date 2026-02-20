@@ -15,6 +15,12 @@ RUN	apt-get install -y bash
 RUN	apt-get install -y procps
 RUN	apt-get install -y dos2unix
 RUN apt-get install -y firefox-esr
+RUN apt-get install -y xvfb 
+RUN apt-get install -y x11vnc 
+RUN apt-get install -y fluxbox
+
+# Clean apt cache (optional but recommended) 
+RUN apt-get clean
 
 # Set working directory inside container
 WORKDIR /app
@@ -22,6 +28,7 @@ WORKDIR /app
 # Expose ports
 EXPOSE 5000
 EXPOSE 5678
+EXPOSE 5900
 
-# Default command: start bash shell
-CMD ["/bin/bash"]
+# Start Xvfb + Fluxbox + VNC server, then open bash 
+CMD bash -c "rm -f /tmp/.X0-lock /tmp/.X11-unix/X0; Xvfb :0 -screen 0 1920x1080x24 & fluxbox & x11vnc -display :0 -nopw -forever -quiet & bash"

@@ -23,10 +23,11 @@ def get_driver_settings():
     opt.set_preference('useAutomationExtension', False)
     opt.set_preference("security.mixed_content.block_active_content", False)
     opt.set_preference("security.mixed_content.block_display_content", False)
-    opt.add_argument("--headless")
+    #opt.add_argument("--headless")     # to visualize the video
     opt.add_argument("--no-sandbox")
     opt.add_argument("--disable-dev-shm-usage")
     opt.set_preference("security.sandbox.content.level", 0)
+    opt.add_argument("--display=:0")     # to visualize the video
 
     driver = webdriver.Firefox(service=srv, options=opt)
     driver.maximize_window()
