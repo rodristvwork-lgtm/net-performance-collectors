@@ -39,24 +39,9 @@ def play():
         hover = ActionChains(driver).move_to_element(movie_player)
         hover.perform()
         
-        #ActionChains(driver).context_click(movie_player).perform() # to activate nerd mode
-        
-        time.sleep(1990)
-        # WAIT UNTIL VIDEO ENDS
-        print("Waiting for video to finish...")
-
-        while True:
-            state = driver.execute_script("return document.getElementById('movie_player').getPlayerState()")
-            time.sleep(1)
-
-        # 0 means ENDED
-            if state == 0:
-                print("Video finished.")
-            break
-            
-        # 1 means PLAYING, 2 means PAUSED, 3 means BUFFERING, etc.
-        
-        print(f"RUN: {start_time} | Ending")
+        #ActionChains(driver).context_click(movie_player).perform() # to activate nerd mode    
+        time.sleep(50) # error -> video stop at 40 secods
+    
         
     finally:
         try:
