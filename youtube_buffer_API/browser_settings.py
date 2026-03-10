@@ -8,7 +8,7 @@ def get_driver_settings(url):
            
     print(f"RUN: {start_time} | {url}")
     
-    srv = webdriver.FirefoxService(os.path.join("driver", "geckodriver"))
+    srv = webdriver.FirefoxService(os.path.join("../geckodriver"))
     opt = webdriver.FirefoxOptions()
     opt.add_argument("--no-sandbox")
     opt.add_argument("--disable-dev-shm-usage")

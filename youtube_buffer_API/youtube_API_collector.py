@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By                         # type: igno
 import traceback
 import time
 from browser_settings import get_driver_settings
+from youtube_iframe import change_resolution
 
 start_time = int(time.time())
 
@@ -25,51 +26,21 @@ def play(url, minutes):
             EC.element_to_be_clickable((By.CSS_SELECTOR, "button.ytp-large-play-button"))
         )
         # still wait before play
-        time.sleep(5)
+        time.sleep(3)
+        
         # Click play
         play_button.click()
-
-        resolution = "1080p"
-        resolution2 = "720p"
         
-        print(f"RUN: {start_time} | Selecting resolution {resolution}")
-        time.sleep(0.2)
-        sb = driver.find_element(by=By.CSS_SELECTOR, value='.ytp-button.ytp-settings-button')
-        sb.click()
-        time.sleep(0.3)
-        try:
-            elem = driver.find_element(by=By.CSS_SELECTOR, value='div.ytp-menuitem[role="menuitem"] > div.ytp-menuitem-content span')
-            elem.click()
-        except:
-            try:
-                elem = driver.find_element(by=By.CSS_SELECTOR, value='div.ytp-menuitem:nth-child(5) > div:nth-child(1)')
-                elem.click()
-            except:
-                elem = driver.find_element(by=By.CSS_SELECTOR, value='div.ytp-menuitem:nth-child(4) > div:nth-child(1)')
-                elem.click()
-
         time.sleep(2)
-        res = driver.find_elements(by=By.CLASS_NAME, value="ytp-menuitem-label")
-        for item in res:
-            # print(item.text)
-            if resolution in item.text:
-                item.click()
-                print(f"RUN: {start_time} | Resolution selected", resolution)
-                break
-        else:
-            for item in res:
-                if resolution2 in item.text:
-                    item.click()
-                    print(f"RUN: {start_time} | Resolution selected", resolution2)
-                    break
 
-        print(f'RUN: {start_time} | Resolution {resolution} not available yet')
+        change_resolution(driver, start_time)
         
         end_time = time.time() + minutes * 60
             
         while time.time() < end_time:
-                print("To Fetch Data")
-                time.sleep(1)
+            
+            print("To Fetch Data")    
+            time.sleep(1)
                 
         return True   
 
@@ -81,7 +52,7 @@ def play(url, minutes):
         if driver:
             try: driver.quit()
             except: pass
-            
+                    
 if __name__ == "__main__":
     
     try:
