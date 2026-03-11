@@ -1,14 +1,18 @@
 import time
 from selenium.webdriver.common.by import By   # type: ignore
 
-def change_resolution(driver, start_time):
+def change_resolution(driver, start_time, resolution):
 
-    resolutions_priority = [
-        "2160p",   # 4K
-        "1440p",   # 2K
-        "1080p",
-        "720p"
-    ]
+    resolution_map = {
+        "high": ["2160p","1440p","1080p"],
+        "medium": ["720p","480p"],
+        "low": ["360p","240p","144p"]
+    }
+
+    resolutions_priority = resolution_map.get(
+        resolution,
+        ["2160p","1440p","1080p","720p","480p","360p","240p","144p"]
+    )
 
     print(f"RUN: {start_time} | Selecting best available resolution")
 
@@ -17,7 +21,6 @@ def change_resolution(driver, start_time):
     # open settings
     sb = driver.find_element(By.CSS_SELECTOR, ".ytp-button.ytp-settings-button")
     sb.click()
-
     time.sleep(0.3)
 
     # open quality menu
