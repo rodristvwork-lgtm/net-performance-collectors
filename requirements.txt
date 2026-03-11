@@ -3,3 +3,4 @@ selenium
 logging
 config
 requests
+pandas
