@@ -76,7 +76,9 @@ python -m debugpy --listen 0.0.0.0:5678 --wait-for-client "filename".py
 
 ### WebB
 
-# For VNC Viewer
+### For VNC Viewer
+
+Launch these comands container console:
 
 export DISPLAY=:0
 disable headless option
