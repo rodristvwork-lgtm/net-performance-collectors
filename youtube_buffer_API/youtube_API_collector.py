@@ -122,7 +122,7 @@ if __name__ == "__main__":
         address = sys.argv[1]
         url = f"http://{address}:8000/"
         resolution = "medium" 
-        minutes = 2
+        minutes = 10
         df = fetch_video_buffer(url, minutes ,resolution)
         print(df)
         # Save data in txt format
