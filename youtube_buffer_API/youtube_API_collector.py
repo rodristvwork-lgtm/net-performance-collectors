@@ -9,6 +9,7 @@ from youtube_iframe import change_resolution
 import os
 import time
 import sys
+from datetime import datetime
 
 start_time = int(time.time())
 
@@ -77,21 +78,32 @@ def fetch_video_buffer(url, minutes, resolution):
                 driver.quit()
             except:
                 pass
-        
-def save_yt_buffer_results(df):
+            
+def save_yt_buffer_results(df, minutes, resolution):
 
     try:
         if df is None or df.empty:
             print("No data to save.")
             return
+
         # Create directory if it does not exist
         results_dir = "results"
         os.makedirs(results_dir, exist_ok=True)
 
-        # Create filename with timestamp
-        timestamp = int(time.time())
-        filename = f"yt_buffer_results_{timestamp}.txt"
-        filepath = os.path.join(results_dir, filename)
+        # Create timestamp
+        today = datetime.now().strftime("%d_%B_%Y").upper() 
+
+        # Find next available counter
+        counter = 1
+        while True:
+            filename = f"yt_buffer_{minutes}_minutes_{resolution}_resolution_{today}_{counter}.txt"
+            
+            # also add -> resolution
+            filepath = os.path.join(results_dir, filename)
+
+            if not os.path.exists(filepath):
+                break
+            counter += 1
 
         # Save DataFrame
         df.to_csv(filepath, sep=";", index=False)
@@ -99,7 +111,7 @@ def save_yt_buffer_results(df):
 
     except Exception as e:
         print(f"Error saving results: {e}")
-                       
+        
 if __name__ == "__main__":
 
     try:
@@ -109,10 +121,14 @@ if __name__ == "__main__":
             
         address = sys.argv[1]
         url = f"http://{address}:8000/"
-        df = fetch_video_buffer(url, 2, "low")
+        resolution = "medium" 
+        minutes = 2
+        df = fetch_video_buffer(url, minutes ,resolution)
         print(df)
         # Save data in txt format
-        save_yt_buffer_results(df)
+        save_yt_buffer_results(df,minutes, resolution)
 
     except Exception as e:
         print(f"Exception outside video playing: {e}")
+        
+#  172.30.128.1
