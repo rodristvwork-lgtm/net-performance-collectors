@@ -12,6 +12,14 @@ from datetime import datetime
 from selenium.webdriver.firefox.service import Service      # type: ignore
 from selenium.webdriver.firefox.options import Options      # type: ignore
 
+EXPECTED_FIELDS = [
+    "website", "host_name", "ipgw", "esn", "siteid", "beam", "outroute_freq",
+    "first_contentful_paint", "total_blocking_time", "load_time",
+    "first_byte_time", "dom_content_loaded", "dom_Interactive_time",
+    "total_time", "hop_number", "trace_dict",
+    "Hardware_type", "Software_version", "Environment", "timestamp"
+]
+
 
 def _test_single_metric(driver, metrics):
     to_ret = ""
@@ -184,7 +192,7 @@ def _write_results(results: List[dict]) -> None:
     
     with open(config.settings["results_file_name"], mode='a') as csv_file:
         result: dict
-        writer = csv.DictWriter(csv_file, fieldnames=results[0].keys())
+        writer = csv.DictWriter(csv_file, fieldnames= EXPECTED_FIELDS)
         if write_headers:
             writer.writeheader()
 
