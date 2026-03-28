@@ -153,10 +153,11 @@ def _load_single_website(url: str) -> dict:
 
         # ---- Decide whether to run traceroute ----
         metrics_failed = (
-            fcp < 0 or
+            
             to_ret["load_time"] < 0 or
             to_ret["dom_content_loaded"] < 0
         )
+
 
         if metrics_failed:
             logging.info("Metrics failed — running traceroute fallback")
