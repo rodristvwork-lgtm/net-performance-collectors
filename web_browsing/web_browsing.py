@@ -21,15 +21,15 @@ EXPECTED_FIELDS = [
 ]
 
 
-def _test_single_metric(driver, metrics):
-    to_ret = ""
+def normalize_number(value):
     try:
-        to_ret = driver.execute_script(config.settings[metrics])
-    except Exception as e:
-        logging.exception(e)
-        to_ret = config.settings["failed_test_value"]
-    return to_ret
-
+        f = float(value)
+        if f.is_integer():
+            return int(f)
+        return f
+    except:
+        return value
+    
 def _traceroute_website(to_ret, url):
     
     to_ret["total_time"] = -1
@@ -222,20 +222,25 @@ def _write_results(results: List[dict]) -> None:
 
     results_path = config.settings["results_file_name"]
     results_dir = os.path.dirname(results_path)
-        
-    if results_dir and not os.path.exists(results_dir): 
+
+    if results_dir and not os.path.exists(results_dir):
         os.makedirs(results_dir, exist_ok=True)
-        
+
     write_headers: bool = not os.path.isfile(results_path)
-    
+
     with open(config.settings["results_file_name"], mode='a') as csv_file:
-        result: dict
-        writer = csv.DictWriter(csv_file, fieldnames= EXPECTED_FIELDS)
+        writer = csv.DictWriter(csv_file, fieldnames=EXPECTED_FIELDS)
+
         if write_headers:
             writer.writeheader()
 
         for result in results:
+            # Normalize numeric fields BEFORE writing
+            for key in result:
+                result[key] = normalize_number(result[key])
+
             writer.writerow(result)
+
         logging.info(f"{len(results)} tests written to results file")
 
 def _read_input_parameters() -> List[str]:
