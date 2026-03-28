@@ -85,20 +85,23 @@ def _traceroute_website(to_ret, url):
 def _load_single_website(url: str) -> dict:
     
     """returns loading time of single website"""
-    
+
     to_ret = {
-                "website": url,
-                "host_name": config.get_nodename()
-            }
-    
-    driver = None  
-    
+        "website": url,
+        "host_name": config.get_nodename()
+    }
+
+    driver = None
+
     try:
-        
-        to_ret["ipgw"], to_ret["esn"], to_ret["siteid"], to_ret["beam"], to_ret["outroute_freq"] = 'NA', 'NA', 'NA', 'NA', 'NA'
+        # Fill modem info
+        to_ret["ipgw"], to_ret["esn"], to_ret["siteid"], to_ret["beam"], to_ret["outroute_freq"] = \
+            'NA', 'NA', 'NA', 'NA', 'NA'
         to_ret = config.get_modem_info(to_ret)
-        logging.info(f"loading {url}")
-        
+
+        logging.info(f"Loading {url}")
+
+        # Firefox options
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
@@ -108,36 +111,70 @@ def _load_single_website(url: str) -> dict:
             executable_path=f"{os.getcwd()}/{config.settings['geckodriver_path']}"
         )
 
-        driver = Firefox(
-            service=service,
-            options=options
-        )
-
+        driver = Firefox(service=service, options=options)
         driver.set_page_load_timeout(config.settings["website_loading_timeout"])
         driver.implicitly_wait(config.settings["website_loading_timeout"])
-     
+
         time.sleep(config.settings["sleep_before_load"])
         driver.get(url)
-        to_ret["first_contentful_paint"] = _test_single_metric(driver, "first_contentful_paint")
-        to_ret["total_blocking_time"] = _test_single_metric(driver, "total_blocking_time")
-        navigation_start = _test_single_metric(driver, "start_time_cmd")
-        load_complete = _test_single_metric(driver, "end_time_cmd")
-        dom_complete = _test_single_metric(driver, "dom_complete_cmd")
-        domInteractive = _test_single_metric(driver, "domInteractive_cmd")
-        response_start = _test_single_metric(driver, "response_start_cmd")
-        to_ret["load_time"] = load_complete - navigation_start
-        to_ret["first_byte_time"] = response_start - navigation_start
-        to_ret["dom_content_loaded"] = dom_complete - navigation_start
-        to_ret["dom_Interactive_time"] = domInteractive - navigation_start
-        logging.info("start traceroute")
-        to_ret = _traceroute_website(to_ret, url)
-        to_ret["Hardware_type"] = config.get_hw_type()           
+
+        # ---- Collect metrics safely ----
+        def safe_metric(key):
+            try:
+                val = driver.execute_script(config.settings[key])
+                return float(val)
+            except Exception as e:
+                logging.error(f"Metric {key} failed: {e}")
+                return float(config.settings["failed_test_value"])
+
+        fcp = safe_metric("first_contentful_paint")
+        tbt = safe_metric("total_blocking_time")
+        nav_start = safe_metric("start_time_cmd")
+        load_end = safe_metric("end_time_cmd")
+        dom_complete = safe_metric("dom_complete_cmd")
+        dom_interactive = safe_metric("domInteractive_cmd")
+        response_start = safe_metric("response_start_cmd")
+
+        # ---- Compute derived metrics ----
+        to_ret["first_contentful_paint"] = fcp
+        to_ret["total_blocking_time"] = tbt
+
+        if nav_start >= 0 and load_end >= 0:
+            to_ret["load_time"] = load_end - nav_start
+            to_ret["first_byte_time"] = response_start - nav_start
+            to_ret["dom_content_loaded"] = dom_complete - nav_start
+            to_ret["dom_Interactive_time"] = dom_interactive - nav_start
+        else:
+            # Mark as failed
+            to_ret["load_time"] = -1
+            to_ret["first_byte_time"] = -1
+            to_ret["dom_content_loaded"] = -1
+            to_ret["dom_Interactive_time"] = -1
+
+        # ---- Decide whether to run traceroute ----
+        metrics_failed = (
+            fcp < 0 or
+            to_ret["load_time"] < 0 or
+            to_ret["dom_content_loaded"] < 0
+        )
+
+        if metrics_failed:
+            logging.info("Metrics failed — running traceroute fallback")
+            to_ret = _traceroute_website(to_ret, url)
+        else:
+            logging.info("Metrics OK — skipping traceroute")
+            to_ret["total_time"] = -1
+            to_ret["hop_number"] = -1
+            to_ret["trace_dict"] = {}
+
+        # ---- Add metadata ----
+        to_ret["Hardware_type"] = config.get_hw_type()
         to_ret["Software_version"] = config.get_sw_type()
         to_ret["Environment"] = "prod"
         logging.info("test done")
         
     except Exception as e:
-        logging.error(f"an exception occured while testing {url}")
+        logging.error(f"An exception occurred while testing {url}")
         logging.exception(e)
 
     finally:
