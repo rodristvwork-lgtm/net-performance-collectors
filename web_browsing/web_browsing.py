@@ -252,13 +252,36 @@ def _read_input_parameters() -> List[str]:
     return websites
 
 def test_websites(sites: List[str]) -> None:
-    """test list of websites from input and stores results"""
+    """Test list of websites with resource‑safe execution."""
 
     results: List[dict] = []
-    site: str
-    for site in sites:
-        results.append(_load_single_website(site))
-    _write_results(results)
+
+    CLEANUP_INTERVAL = 5          # kill processes every N sites
+    INTER_TEST_DELAY = 2          # seconds between tests
+    HARD_RESET_DELAY = 3          # wait after killing processes
+
+    for index, site in enumerate(sites):
+
+        logging.info(f"=== Testing site {index+1}/{len(sites)}: {site} ===")
+
+        # Run the test
+        result = _load_single_website(site)
+        results.append(result)
+
+        # Write partial results to avoid losing data on crash
+        _write_results([result])
+
+        # Throttle between tests
+        time.sleep(INTER_TEST_DELAY)
+
+        # Every N sites, force cleanup of Firefox + geckodriver
+        if (index + 1) % CLEANUP_INTERVAL == 0:
+            logging.info("Performing scheduled cleanup of Firefox processes")
+            os.system("pkill -f firefox")
+            os.system("pkill -f geckodriver")
+            time.sleep(HARD_RESET_DELAY)
+
+    logging.info("All tests completed")
 
 if __name__ == "__main__":
     sites: List[str] = _read_input_parameters()
