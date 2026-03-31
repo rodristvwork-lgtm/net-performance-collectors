@@ -28,10 +28,12 @@ def fetch_video_buffer(url, minutes, resolution):
 
         # Switch to the YouTube iframe and play the video
         driver.switch_to.frame(iframe)
+        
         play_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button.ytp-large-play-button"))
-        )
-
+            EC.element_to_be_clickable((
+            By.XPATH,"//button[contains(@aria-label, 'Play')]"
+        )))
+        
         time.sleep(3)
         play_button.click()
         time.sleep(2)
@@ -130,5 +132,3 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"Exception outside video playing: {e}")
-        
-#  172.30.128.1
