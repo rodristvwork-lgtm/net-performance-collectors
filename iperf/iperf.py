@@ -37,8 +37,6 @@ def build_type_for_result(udp, download):
 
 def run_iperf(server_ip, duration, udp, download ,start_port ,end_port, bandwidth = None, save = False):
     
-    start_port = 9212
-    end_port = 9240
     ip_address = get_local_ip()
       
     for port in range(start_port, end_port+1):
