@@ -32,13 +32,12 @@ def build_type_for_result(udp, download):
         if not os.path.exists(filename):
             break
         counter += 1
-    
-    
+        
     return filename
 
-def run_iperf(server_ip, duration, udp, download, bandwidth = None, save = False):
+def run_iperf(server_ip, duration, udp, download ,start_port ,end_port, bandwidth = None, save = False):
     
-    start_port = 9204
+    start_port = 9212
     end_port = 9240
     ip_address = get_local_ip()
       
@@ -61,7 +60,7 @@ def run_iperf(server_ip, duration, udp, download, bandwidth = None, save = False
         else:
             cmd.extend(["--get-server-output"])
 
-        print(f"port: {port}")
+        print(f"using port: {port}")
         print(f"command: {cmd}")
         
         # catch error input
@@ -71,10 +70,10 @@ def run_iperf(server_ip, duration, udp, download, bandwidth = None, save = False
             process_lines = []
                         
             for line in process.stdout:
-                print(line, end="")
                 process_lines.append(line)
                 if "iperf Done." in line:
                     process.terminate()
+                    print("iperf done successful")
                     if save:
                         filename = build_type_for_result(udp, download)                       
                         with open(filename, "w") as f:
@@ -91,13 +90,5 @@ def run_iperf(server_ip, duration, udp, download, bandwidth = None, save = False
 
 if __name__ == "__main__":
     
-    # TCP DOWNLOAD
-    run_iperf("178.215.228.109", duration=90, udp=False, download=True, save=True)
-    # TCP UPLOAD
-    run_iperf("178.215.228.109", duration=90, udp= False, download=False, save= True )
-    # UDP DOWNLOAD
-    run_iperf("178.215.228.109", duration=90, udp= True, download=True, bandwidth="10M", save= True)
-    # UDP DOWNLOAD
-    run_iperf("178.215.228.109", duration=90, udp= True, download= False, bandwidth="10M", save= True)
-
-    
+    # SETUP IPERF
+    run_iperf("178.215.228.109", duration=20, udp= True, download= False, start_port=9212, end_port=9240, bandwidth="10M", save= True)

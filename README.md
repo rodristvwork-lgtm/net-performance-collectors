@@ -66,5 +66,5 @@ python -m venv .venv && source .venv/bin/activate && python -m pip install --upg
 
 python download_firefox_driver.py
 
-### step 5 - Debug
+### (optional )Debug using VSC
 python -m debugpy --listen 0.0.0.0:5678 --wait-for-client "filename".py
