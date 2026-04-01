@@ -14,13 +14,13 @@
   "website_loading_timeout": 60,
   "geckodriver_path": "../geckodriver",
   "host": {
-    "default_node_name": "Raspberry",
-    "ipgw": "ip_pippo",
-    "esn": "esn_pippo",
-    "siteid": "siteid_pippo",
-    "beam": "beam_pippo",
-    "outroute_freq": "outroute_pippo",
-    "Hardware_type": "Raspberry_hw",
-    "Software_version": "Raspberry_sw"
+    "default_node_name": "OTA1",
+    "ipgw": "OTA1_ip",
+    "esn": "OTA1_esn",
+    "siteid": "OTA1_site",
+    "beam": "OTA1_beam",
+    "outroute_freq": "OTA1_out",
+    "Hardware_type": "OTA1_hw",
+    "Software_version": "OTA1_sw"
   }
 }
