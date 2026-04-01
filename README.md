@@ -1,10 +1,10 @@
-# net-performance-collectors - Guacamole Version v1.0
+# net-performance-collectors version2
 
 ##  Installation
 
 #### Get collectors
 
-git clone -b ota-guacamole https://github.com/rodristvwork-lgtm/net-performance-collectors.git
+git clone -b version2 https://github.com/rodristvwork-lgtm/net-performance-collectors.git
 
 #### 1.Create environment
 python3 -m venv .venv
