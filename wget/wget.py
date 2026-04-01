@@ -37,7 +37,7 @@ def wget_function(url, output_file, final_file, bitrate_file):
         
 if __name__ == "__main__":
     
-    url = "http://ipv4.download.thinkbroadband.com:8080/1GB.zip"
+    url = "http://ipv4.download.thinkbroadband.com:8080/200MB.zip"
     file_path = 'bitrates.csv'
     output_file = "terminal_output.txt"
     current_date = datetime.now().strftime("%Y-%m-%d")
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     wget_function(url, output_file, final_file, file_path)
 
     for f in os.listdir(dir):
-        if re.search(r"1GB.zip\d?", f):
+        if re.search(r"200MB.zip\d?", f):
             os.remove(f)
 
     if os.path.exists(output_file):
