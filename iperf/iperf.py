@@ -2,6 +2,7 @@ import socket
 import subprocess
 import os
 from datetime import datetime
+from IperfModel import IperfJob
 
 def get_local_ip():
     
@@ -69,24 +70,82 @@ def run_iperf(server_ip, duration, udp, download ,start_port ,end_port, bandwidt
                         
             for line in process.stdout:
                 process_lines.append(line)
+
                 if "iperf Done." in line:
                     process.terminate()
                     print("iperf done successful")
+
                     if save:
-                        filename = build_type_for_result(udp, download)                       
+                        filename = build_type_for_result(udp, download)
                         with open(filename, "w") as f:
                             f.writelines(process_lines)
-                            f.close()
-                    return True
-                
-        except subprocess.CalledProcessError as e:
+                    return port
 
-            print(f"error found: {e}")
-            print(f"lets try with port: {port}")
-            
-    return False
+        except subprocess.CalledProcessError:
+            pass
+        
+    return None
+
+
+def run_iperf_job(job, server_ip, start_port, end_port):
+    return run_iperf(
+        server_ip=server_ip,
+        duration=job.duration,
+        udp=job.udp,
+        download=job.download,
+        start_port=start_port,
+        end_port=end_port,
+        bandwidth=job.bandwidth,
+        save=job.save
+    )
+    
+def iperf_orchestrator(server_ip, jobs, start_port, end_port):
+    
+    current_port = start_port
+
+    for index, job in enumerate(jobs, start=1):
+
+        proto = "UDP" if job.udp else "TCP"
+        direction = "DL" if job.download else "UP"
+        print(f"\n=== Running job #{index}: {direction}-{proto} on port {current_port} ===")
+
+        result_port = run_iperf_job(
+            job=job,
+            server_ip=server_ip,
+            start_port=current_port,
+            end_port=end_port
+        )
+
+        if result_port is None:
+            print(f"Job #{index} failed on all ports.")
+            return False
+
+        print(f"Job #{index} succeeded on port {result_port}.")
+        current_port = result_port
+
+    print("\nAll iperf jobs completed successfully.")
+    return True
 
 if __name__ == "__main__":
-    
-    # SETUP IPERF
-    run_iperf("178.215.228.109", duration=20, udp= True, download= False, start_port=9212, end_port=9240, bandwidth="10M", save= True)
+
+    jobs = [
+        IperfJob(udp=False, download=False, duration=90),
+        IperfJob(udp=False, download=True,  duration=90),
+        IperfJob(udp=True,  download=False, duration=90, bandwidth="10M"),
+        IperfJob(udp=True,  download=True,  duration=90, bandwidth="10M"),
+        
+    ]
+    now = datetime.now()
+    hour = now.hour
+    minute = now.minute
+    print(f" start : {hour}:{minute}")
+    iperf_orchestrator(
+        server_ip="iperf3.moji.fr", # 5200-5240
+        jobs=jobs,
+        start_port=5220,
+        end_port=5230
+    )
+    now = datetime.now()
+    hour = now.hour
+    minute = now.minute
+    print(f" end : {hour}:{minute}")
