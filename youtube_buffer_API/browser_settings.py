@@ -1,0 +1,28 @@
+from selenium import webdriver # type: ignore
+import time
+import os
+
+start_time = int(time.time())
+
+def get_driver_settings(url):
+           
+    print(f"RUN: {start_time} | {url}")
+    
+    srv = webdriver.FirefoxService(os.path.join("../geckodriver"))
+    opt = webdriver.FirefoxOptions()
+    opt.add_argument("--no-sandbox")
+    opt.add_argument("--disable-dev-shm-usage")
+    opt.add_argument("--display=:0")     # to visualize the video
+    
+    opt.set_preference("media.ffmpeg.enabled", True)
+    opt.set_preference("media.ffvpx.enabled", False)
+    opt.set_preference("media.av1.enabled", False)
+    opt.set_preference("media.webm.enabled", False)
+    opt.set_preference("media.hardware-video-decoding.enabled", True)
+
+    driver = webdriver.Firefox(service=srv, options=opt)
+    driver.maximize_window()
+    time.sleep(3)
+    driver.get(url)
+    
+    return driver
