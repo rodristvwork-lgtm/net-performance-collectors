@@ -7,21 +7,29 @@ import config
 from subprocess import PIPE, Popen
 from platform import system
 from typing import List
-from selenium.webdriver import Firefox
+from selenium.webdriver import Firefox                      # type: ignore
 from datetime import datetime
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service      # type: ignore
+from selenium.webdriver.firefox.options import Options      # type: ignore
+
+EXPECTED_FIELDS = [
+    "website", "host_name", "ipgw", "esn", "siteid", "beam", "outroute_freq",
+    "first_contentful_paint", "total_blocking_time", "load_time",
+    "first_byte_time", "dom_content_loaded", "dom_Interactive_time",
+    "total_time", "hop_number", "trace_dict",
+    "Hardware_type", "Software_version", "Environment", "timestamp"
+]
 
 
-def _test_single_metric(driver, metrics):
-    to_ret = ""
+def normalize_number(value):
     try:
-        to_ret = driver.execute_script(config.settings[metrics])
-    except Exception as e:
-        logging.exception(e)
-        to_ret = config.settings["failed_test_value"]
-    return to_ret
-
+        f = float(value)
+        if f.is_integer():
+            return int(f)
+        return f
+    except:
+        return value
+    
 def _traceroute_website(to_ret, url):
     
     to_ret["total_time"] = -1
@@ -77,20 +85,23 @@ def _traceroute_website(to_ret, url):
 def _load_single_website(url: str) -> dict:
     
     """returns loading time of single website"""
-    
+
     to_ret = {
-                "website": url,
-                "host_name": config.get_nodename()
-            }
-    
-    driver = None  
-    
+        "website": url,
+        "host_name": config.get_nodename()
+    }
+
+    driver = None
+
     try:
-        
-        to_ret["ipgw"], to_ret["esn"], to_ret["siteid"], to_ret["beam"], to_ret["outroute_freq"] = 'NA', 'NA', 'NA', 'NA', 'NA'
+        # Fill modem info
+        to_ret["ipgw"], to_ret["esn"], to_ret["siteid"], to_ret["beam"], to_ret["outroute_freq"] = \
+            'NA', 'NA', 'NA', 'NA', 'NA'
         to_ret = config.get_modem_info(to_ret)
-        logging.info(f"loading {url}")
-        
+
+        logging.info(f"Loading {url}")
+
+        # Firefox options
         options = Options()
         #options.add_argument("--headless")
         options.add_argument("--no-sandbox")
@@ -100,36 +111,71 @@ def _load_single_website(url: str) -> dict:
             executable_path=f"{os.getcwd()}/{config.settings['geckodriver_path']}"
         )
 
-        driver = Firefox(
-            service=service,
-            options=options
-        )
-
+        driver = Firefox(service=service, options=options)
         driver.set_page_load_timeout(config.settings["website_loading_timeout"])
         driver.implicitly_wait(config.settings["website_loading_timeout"])
-     
+
         time.sleep(config.settings["sleep_before_load"])
         driver.get(url)
-        to_ret["first_contentful_paint"] = _test_single_metric(driver, "first_contentful_paint")
-        to_ret["total_blocking_time"] = _test_single_metric(driver, "total_blocking_time")
-        navigation_start = _test_single_metric(driver, "start_time_cmd")
-        load_complete = _test_single_metric(driver, "end_time_cmd")
-        dom_complete = _test_single_metric(driver, "dom_complete_cmd")
-        domInteractive = _test_single_metric(driver, "domInteractive_cmd")
-        response_start = _test_single_metric(driver, "response_start_cmd")
-        to_ret["load_time"] = load_complete - navigation_start
-        to_ret["first_byte_time"] = response_start - navigation_start
-        to_ret["dom_content_loaded"] = dom_complete - navigation_start
-        to_ret["dom_Interactive_time"] = domInteractive - navigation_start
-        logging.info("start traceroute")
-        to_ret = _traceroute_website(to_ret, url)
-        to_ret["Hardware_type"] = config.get_hw_type()           
+
+        # ---- Collect metrics safely ----
+        def safe_metric(key):
+            try:
+                val = driver.execute_script(config.settings[key])
+                return float(val)
+            except Exception as e:
+                logging.error(f"Metric {key} failed: {e}")
+                return float(config.settings["failed_test_value"])
+
+        fcp = safe_metric("first_contentful_paint")
+        tbt = safe_metric("total_blocking_time")
+        nav_start = safe_metric("start_time_cmd")
+        load_end = safe_metric("end_time_cmd")
+        dom_complete = safe_metric("dom_complete_cmd")
+        dom_interactive = safe_metric("domInteractive_cmd")
+        response_start = safe_metric("response_start_cmd")
+
+        # ---- Compute derived metrics ----
+        to_ret["first_contentful_paint"] = fcp
+        to_ret["total_blocking_time"] = tbt
+
+        if nav_start >= 0 and load_end >= 0:
+            to_ret["load_time"] = load_end - nav_start
+            to_ret["first_byte_time"] = response_start - nav_start
+            to_ret["dom_content_loaded"] = dom_complete - nav_start
+            to_ret["dom_Interactive_time"] = dom_interactive - nav_start
+        else:
+            # Mark as failed
+            to_ret["load_time"] = -1
+            to_ret["first_byte_time"] = -1
+            to_ret["dom_content_loaded"] = -1
+            to_ret["dom_Interactive_time"] = -1
+
+        # ---- Decide whether to run traceroute ----
+        metrics_failed = (
+            
+            to_ret["load_time"] < 0 or
+            to_ret["dom_content_loaded"] < 0
+        )
+
+
+        if metrics_failed:
+            logging.info("Metrics failed — running traceroute fallback")
+            to_ret = _traceroute_website(to_ret, url)
+        else:
+            logging.info("Metrics OK — skipping traceroute")
+            to_ret["total_time"] = -1
+            to_ret["hop_number"] = -1
+            to_ret["trace_dict"] = {}
+
+        # ---- Add metadata ----
+        to_ret["Hardware_type"] = config.get_hw_type()
         to_ret["Software_version"] = config.get_sw_type()
         to_ret["Environment"] = "prod"
         logging.info("test done")
         
     except Exception as e:
-        logging.error(f"an exception occured while testing {url}")
+        logging.error(f"An exception occurred while testing {url}")
         logging.exception(e)
 
     finally:
@@ -176,20 +222,25 @@ def _write_results(results: List[dict]) -> None:
 
     results_path = config.settings["results_file_name"]
     results_dir = os.path.dirname(results_path)
-        
-    if results_dir and not os.path.exists(results_dir): 
+
+    if results_dir and not os.path.exists(results_dir):
         os.makedirs(results_dir, exist_ok=True)
-        
+
     write_headers: bool = not os.path.isfile(results_path)
-    
+
     with open(config.settings["results_file_name"], mode='a') as csv_file:
-        result: dict
-        writer = csv.DictWriter(csv_file, fieldnames=results[0].keys())
+        writer = csv.DictWriter(csv_file, fieldnames=EXPECTED_FIELDS)
+
         if write_headers:
             writer.writeheader()
 
         for result in results:
+            # Normalize numeric fields BEFORE writing
+            for key in result:
+                result[key] = normalize_number(result[key])
+
             writer.writerow(result)
+
         logging.info(f"{len(results)} tests written to results file")
 
 def _read_input_parameters() -> List[str]:
@@ -207,13 +258,36 @@ def _read_input_parameters() -> List[str]:
     return websites
 
 def test_websites(sites: List[str]) -> None:
-    """test list of websites from input and stores results"""
+    """Test list of websites with resource‑safe execution."""
 
     results: List[dict] = []
-    site: str
-    for site in sites:
-        results.append(_load_single_website(site))
-    _write_results(results)
+
+    CLEANUP_INTERVAL = 5          # kill processes every N sites
+    INTER_TEST_DELAY = 2          # seconds between tests
+    HARD_RESET_DELAY = 3          # wait after killing processes
+
+    for index, site in enumerate(sites):
+
+        logging.info(f"=== Testing site {index+1}/{len(sites)}: {site} ===")
+
+        # Run the test
+        result = _load_single_website(site)
+        results.append(result)
+
+        # Write partial results to avoid losing data on crash
+        _write_results([result])
+
+        # Throttle between tests
+        time.sleep(INTER_TEST_DELAY)
+
+        # Every N sites, force cleanup of Firefox + geckodriver
+        if (index + 1) % CLEANUP_INTERVAL == 0:
+            logging.info("Performing scheduled cleanup of Firefox processes")
+            os.system("pkill -f firefox")
+            os.system("pkill -f geckodriver")
+            time.sleep(HARD_RESET_DELAY)
+
+    logging.info("All tests completed")
 
 if __name__ == "__main__":
     sites: List[str] = _read_input_parameters()

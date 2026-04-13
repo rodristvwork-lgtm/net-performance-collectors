@@ -1,11 +1,11 @@
 {
-  "start_time_cmd": "return window.performance.timing.navigationStart",
-  "end_time_cmd": "return window.performance.timing.loadEventEnd",
-  "dom_complete_cmd": "return window.performance.timing.domContentLoadedEventEnd",
-  "domInteractive_cmd": "return window.performance.timing.domInteractive",
-  "response_start_cmd": "return window.performance.timing.responseStart",
-  "first_contentful_paint": "return window.performance.getEntriesByName('first-contentful-paint')[0].startTime;",
-  "total_blocking_time": "var tot = 0; window.performance.getEntriesByType('resource').forEach(function (resource) {if (resource['duration'] > 50) tot = tot + resource['duration']}); return tot",
+  "start_time_cmd": "return performance.timing.navigationStart;",
+  "end_time_cmd": "return performance.timing.loadEventEnd;",
+  "dom_complete_cmd": "return performance.timing.domContentLoadedEventEnd;",
+  "domInteractive_cmd": "return performance.timing.domInteractive;",
+  "response_start_cmd": "return performance.timing.responseStart;",
+  "first_contentful_paint": "var e = performance.getEntriesByName('first-contentful-paint'); if (e && e.length > 0) { return e[0].startTime; } return -1;",
+  "total_blocking_time": "var tot = 0; var entries = performance.getEntriesByType('longtask'); if (entries && entries.length > 0) { entries.forEach(function(t){ tot += t.duration; }); return tot; } var res = performance.getEntriesByType('resource'); if (res && res.length > 0) { res.forEach(function(r){ if (r.duration > 50) tot += r.duration; }); } return tot;",
   "results_file_name": "results/{hostname}_{ts}_results.csv",
   "input_file_path": "input.json",
   "log_file_path": "loading.log",
@@ -14,13 +14,13 @@
   "website_loading_timeout": 60,
   "geckodriver_path": "../geckodriver",
   "host": {
-    "default_node_name": "Raspberry",
-    "ipgw": "ip_pippo",
-    "esn":"esn_pippo",
-    "siteid":"siteid_pippo",
-    "beam":"beam_pippo",
-    "outroute_freq":"outroute_pippo",
-    "Hardware_type": "Raspberry_hw",
-    "Software_version": "Raspberry_sw"
+    "default_node_name": "OTA1",
+    "ipgw": "OTA1_ip",
+    "esn": "OTA1_esn",
+    "siteid": "OTA1_site",
+    "beam": "OTA1_beam",
+    "outroute_freq": "OTA1_out",
+    "Hardware_type": "OTA1_hw",
+    "Software_version": "OTA1_sw"
   }
 }

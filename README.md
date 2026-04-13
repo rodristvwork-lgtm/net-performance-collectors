@@ -1,84 +1,33 @@
-# net-performance-collectors
+# net-performance-collectors - Guacamole Version v1.0
 
-## A) Linux Environment Installation
+##  Installation
 
-### prerequisites
-- Python 3
-- Iperf3
-- net-tools or iproute2
-- wget
-- dos2unix
+#### Get collectors
 
-### step 1 - install Python Environment and Requirements
+git clone -b ota-guacamole https://github.com/rodristvwork-lgtm/net-performance-collectors.git
 
-- python -m venv .venv
-- source .venv/bin/activate
-- python -m pip install --upgrade pip
-- pip install -r requirements.txt
+#### 1.Create environment
+python3 -m venv .venv
 
-### step 2 - download/update Firefox driver ("geckodriver")
-(keep active Python environment)
-
-python download_firefox_driver.py
-
-### step 3 - format Bash Scripts for Crontab jobs
-. init_launcher.sh
-
-### step 4 - give permissions for Crontab jobs
-chmod -R 777 .
-
-## B) Docker Container Installation
-
-### Prerequisites
-Docker version > 29.0
-
-### step 1 - build Image using Dockerfile
-docker build -t net-performance-collectors-image:1.3 .
-
-### step 2 - create container with mounted directory (using this net-performance-collectors directory)
-docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -p 5900:5900 -v "$(Get-Location):/app" net-performance-collectors-image:1.3
-
-exit
-
-### step 3 - access to Contatiner and create enviroment
-docker start -ai net-performance-collectors-container
-
-### step 3.1 - access with other console
-docker exec -it net-performance-collectors-container bash
-
-### step 4 - Python libraries intallation
-
-####  step 4.1  - create environment
-python -m venv .venv
-
-####  step 4.2  - activate environment
+#### 2. Activate environment
 source .venv/bin/activate
 
-####  step 4.3  - update pip
+#### 3. Update pip
 python -m pip install --upgrade pip
 
-####  step 4.2  - install requirements
+#### 4. Install requirements
 pip install -r requirements.txt
 
-#### (optional - all in one line)
-python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt
-
-####  step 4.  download/update Firefox driver ("geckodriver")
+#### 5. download/update Firefox driver ("geckodriver")
 (keep active Python environment)
 
 python download_firefox_driver.py
 
-### step 5 - Debug
-python -m debugpy --listen 0.0.0.0:5678 --wait-for-client "filename".py
+#### (optional) Format Bash Scripts for Crontab jobs
+. init_launcher.sh
 
+#### (optional) Permissions for Crontab jobs
+chmod -R 777 .
 
-## B) Docker Container Configs
-
-### WebB
-
-### For VNC Viewer
-
-Launch these comands container console:
-
-export DISPLAY=:0
-disable headless option
+#### (optional) - 1. , 2. ,3. all in one line
+python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt
