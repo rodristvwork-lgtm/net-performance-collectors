@@ -17,3 +17,6 @@ cd "$SCRIPT_DIR/ping"
 
 # deactivate virtual environment
 deactivate
+
+# Return to project root
+cd "$SCRIPT_DIR"

@@ -17,3 +17,6 @@ cd "$SCRIPT_DIR/web_browsing"
 
 # deactivate virtual environment
 deactivate
+
+# Return to project root
+cd "$SCRIPT_DIR"

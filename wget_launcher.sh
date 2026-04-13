@@ -17,3 +17,6 @@ cd "$SCRIPT_DIR/wget"
 
 # deactivate virtual environment
 deactivate
+
+# Return to project root
+cd "$SCRIPT_DIR"

@@ -4,7 +4,7 @@
 pgrep -f iperf.py | xargs -r kill -9 2>/dev/null
 
 # current directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd
 
 # Activate venv in current shell
 source "$SCRIPT_DIR/.venv/bin/activate"
@@ -17,3 +17,6 @@ cd "$SCRIPT_DIR/iperf"
 
 # deactivate virtual environment
 deactivate
+
+# Return to project root
+cd "$SCRIPT_DIR"

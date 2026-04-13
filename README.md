@@ -23,11 +23,19 @@ pip install -r requirements.txt
 
 python download_firefox_driver.py
 
+#### (optional) - Install all components in one line
+python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt && python download_firefox_driver.py
+
+
 #### (optional) Format Bash Scripts for Crontab jobs
 . init_launcher.sh
 
 #### (optional) Permissions for Crontab jobs
 chmod -R 777 .
 
-#### (optional) - 1. , 2. ,3. all in one line
-python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt
+#### (optional) - Run all the Test
+. iperf_launcher.sh && . ping_launcher.sh && . web_browsing_launcher.sh && . wget_launcher.sh && . youtube_buffer_launcher.sh
+
+
+
+

@@ -44,3 +44,6 @@ cd "$SCRIPT_DIR/youtube_buffer_API"
 
 # Cleanup                                     
 deactivate
+
+# Return to project root
+cd "$SCRIPT_DIR"
