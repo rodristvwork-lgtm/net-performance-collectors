@@ -4,15 +4,26 @@
 Docker version > 29.0
 
 ## step 1 - Build Image using Dockerfile
-docker build -t net-performance-collectors-image:1.3 .
+docker build -t net-performance-collectors-image:1.4 .
 
 ## step 2 - Create container with mounted directory (using this net-performance-collectors directory)
-docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -p 5900:5900 -v "$(Get-Location):/app" net-performance-collectors-image:1.3
+docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -p 5900:5900 -v "$(Get-Location):/app" net-performance-collectors-image:1.4
 
 exit
 
 ## step 3 - Access to Contatiner and create enviroment
 docker start -ai net-performance-collectors-container
+
+## (optional)Add certification
+docker cp "<< path of certificate>>" net-performance-collectors-container:/usr/local/share/ca-certificates/corp-root.crt
+
+e.g:
+
+    docker cp "C:\certs\corp-root-zscaler.cer" net-performance-collectors-container:/usr/local/share/ca-certificates/corp-root.crt
+
+then inside the container run:
+
+    update-ca-certificates
 
 ### (optional) - access in another console
 docker exec -it net-performance-collectors-container bash
