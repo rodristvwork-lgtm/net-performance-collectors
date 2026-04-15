@@ -40,6 +40,9 @@ RUN apt-get clean
 # Set working directory inside container
 WORKDIR /app
 
+# Set display for Xvfb
+ENV DISPLAY=:0
+
 # Expose ports
 EXPOSE 5000
 EXPOSE 5678

@@ -4,7 +4,7 @@
 
 #### Get collectors
 
-git clone -b ota-guacamole https://github.com/rodristvwork-lgtm/net-performance-collectors.git
+git clone -b oocklanew https://github.com/rodristvwork-lgtm/net-performance-collectors.git
 
 #### 1.Create environment
 python3 -m venv .venv
@@ -26,7 +26,6 @@ python download_firefox_driver.py
 #### (optional) - Install all components in one line
 python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt && python download_firefox_driver.py
 
-
 #### (optional) Format Bash Scripts for Crontab jobs
 . init_launcher.sh
 
@@ -35,7 +34,6 @@ chmod -R 777 .
 
 #### (optional) - Run all the Test
 . iperf_launcher.sh && . ping_launcher.sh && . web_browsing_launcher.sh && . wget_launcher.sh && . youtube_buffer_launcher.sh
-
 
 
 

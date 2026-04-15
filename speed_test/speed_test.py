@@ -413,10 +413,18 @@ def send_to_kafka_mirror(metric_type: str, flat_message: dict, mirror_config: di
                 logging.warning(f"[MIRROR] Max retries reached for topic {mirror_topic}. Mirror send skipped.")
                 
 async def test_speedtest(server_id: str, kafka_config: dict, mirror_config: dict = None) -> Optional[pd.DataFrame]:
+    
+    
     """
     Eseguo un test di velocità utilizzando speedtest-cli. Misuro la velocità di
     download, upload e la latenza verso un server specifico. Analizzo l'output
     JSON, preparo un messaggio formattato e lo invio a Kafka.
+    
+    
+    command:
+        
+        speedtest -f json --output-header --accept-license --accept-gdpr
+        
     """
     
     logging.info(f"{'=' * 80}")

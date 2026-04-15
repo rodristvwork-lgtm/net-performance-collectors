@@ -4,7 +4,7 @@
 Docker version > 29.0
 
 ## step 1 - Build Image using Dockerfile
-docker build -t net-performance-collectors-image:1.4 .
+docker build --no-cache -t net-performance-collectors-image:1.4 .
 
 ## step 2 - Create container with mounted directory (using this net-performance-collectors directory)
 docker run -it --name net-performance-collectors-container -p 5000:5000 -p 5678:5678 -p 5900:5900 -v "$(Get-Location):/app" net-performance-collectors-image:1.4
@@ -49,7 +49,6 @@ python download_firefox_driver.py
 
 ### (optional) - all in one line
 python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install -r requirements.txt  && python download_firefox_driver.py
-
 
 ## (optional) - For Debug
 python -m debugpy --listen 0.0.0.0:5678 --wait-for-client "filename".py
