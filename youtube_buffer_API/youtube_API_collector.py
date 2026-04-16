@@ -30,9 +30,8 @@ def fetch_video_buffer(url, minutes, resolution):
         driver.switch_to.frame(iframe)
         
         play_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((
-            By.XPATH,"//button[contains(@aria-label, 'Play')]"
-        )))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label*='Play']")
+        ))
         
         time.sleep(3)
         play_button.click()
