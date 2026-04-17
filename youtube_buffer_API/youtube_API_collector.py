@@ -47,58 +47,38 @@ def fetch_video_buffer(url, minutes, resolution):
             }
         """)
 
-        # Optional: confirm playback
-        is_playing = driver.execute_script("""
-            const v = document.querySelector('video');
-            return v && !v.paused;
-        """)
-        print("[INFO] Video playing:", is_playing)
-
         time.sleep(2)
-
-        # Change resolution (if UI available; otherwise may fail silently)
-        try:
-            change_resolution(driver, start_time, resolution)
-        except Exception as e:
-            print("[WARN] Resolution change failed (likely headless mode):", e)
-
-        # Start buffer collection
+        
+        # Change to the selected resolution -> TO FIX HERE
+        change_resolution(driver, start_time, resolution)
+        
+        # Fetch YouTube buffer information
         end_time = time.time() + minutes * 60
         buffer_second = 0
-
+        
         while time.time() < end_time:
 
-            buffer_second += 1
-
-            # Switch back to main page
+            buffer_second += 1    
+            # Switch back to the main page
             driver.switch_to.default_content()
-
-            current_time = int(time.time())
-
-            try:
-                health_text = driver.find_element(By.ID, "health").text
-                resolution_text = driver.find_element(By.ID, "resolution").text
-
-                health = health_text.split(":", 1)[1].strip().replace("s", "")
-                resolution_val = resolution_text.split(":", 1)[1].strip()
-
-            except Exception:
-                # fallback if elements not ready
-                health = None
-                resolution_val = None
+            current_time = int(time.time())           
+            health_text = driver.find_element(By.ID, "health").text
+            resolution_text = driver.find_element(By.ID, "resolution").text
+            health = health_text.split(":", 1)[1].strip().replace("s", "")
+            resolution = resolution_text.split(":", 1)[1].strip()
 
             data.append({
                 "start_time": start_time,
                 "current_time": current_time,
                 "health": health,
-                "resolution": resolution_val,
+                "resolution": resolution,
                 "buffer_second": buffer_second,
             })
-
             time.sleep(1)
-
-        # Convert to DataFrame
+            
+        # Save the data into a DataFrame
         df = pd.DataFrame(data)
+
         return df
 
     except Exception as e:
