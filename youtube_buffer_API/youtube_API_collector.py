@@ -19,71 +19,86 @@ def fetch_video_buffer(url, minutes, resolution):
     data = []
 
     try:
-        
-        # Initialize driver settings
+        start_time = int(time.time())
+
+        # Initialize driver
         driver = get_driver_settings(url)
-        iframe = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "#player"))
+
+        # Switch to YouTube iframe safely
+        WebDriverWait(driver, 20).until(
+            EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "#player"))
         )
-        
-        # Switch to the YouTube iframe and play the video
-        driver.switch_to.frame(iframe)
-        
-        print("\n--- DEBUG INSIDE IFRAME ---")
 
-        print("URL:", driver.current_url)
+        # Wait until video element is present
+        WebDriverWait(driver, 20).until(
+            lambda d: d.execute_script(
+                "return document.querySelector('video') !== null"
+            )
+        )
 
-        print("\n[HTML snippet]")
-        print(driver.page_source[:2000])
+        print("\n[INFO] Video element detected")
 
-        buttons = driver.find_elements(By.TAG_NAME, "button")
-        print(f"\nButtons found: {len(buttons)}")
+        # Play video via JavaScript (works everywhere)
+        driver.execute_script("""
+            const v = document.querySelector('video');
+            if (v) {
+                v.muted = true;   // avoid autoplay restrictions
+                v.play();
+            }
+        """)
 
-        for b in buttons:
-            print("->", b.get_attribute("aria-label"))
+        # Optional: confirm playback
+        is_playing = driver.execute_script("""
+            const v = document.querySelector('video');
+            return v && !v.paused;
+        """)
+        print("[INFO] Video playing:", is_playing)
 
-        videos = driver.find_elements(By.TAG_NAME, "video")
-        print(f"\nVideos found: {len(videos)}")
-        
-        
-        play_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label*='Play']")
-        ))
-        
-        time.sleep(3)
-        play_button.click()
         time.sleep(2)
-        
-        # Change to the selected resolution
-        change_resolution(driver, start_time, resolution)
-        
-        # Fetch YouTube buffer information
+
+        # Change resolution (if UI available; otherwise may fail silently)
+        try:
+            change_resolution(driver, start_time, resolution)
+        except Exception as e:
+            print("[WARN] Resolution change failed (likely headless mode):", e)
+
+        # Start buffer collection
         end_time = time.time() + minutes * 60
         buffer_second = 0
-        
+
         while time.time() < end_time:
 
-            buffer_second += 1    
-            # Switch back to the main page
+            buffer_second += 1
+
+            # Switch back to main page
             driver.switch_to.default_content()
-            current_time = int(time.time())           
-            health_text = driver.find_element(By.ID, "health").text
-            resolution_text = driver.find_element(By.ID, "resolution").text
-            health = health_text.split(":", 1)[1].strip().replace("s", "")
-            resolution = resolution_text.split(":", 1)[1].strip()
+
+            current_time = int(time.time())
+
+            try:
+                health_text = driver.find_element(By.ID, "health").text
+                resolution_text = driver.find_element(By.ID, "resolution").text
+
+                health = health_text.split(":", 1)[1].strip().replace("s", "")
+                resolution_val = resolution_text.split(":", 1)[1].strip()
+
+            except Exception:
+                # fallback if elements not ready
+                health = None
+                resolution_val = None
 
             data.append({
                 "start_time": start_time,
                 "current_time": current_time,
                 "health": health,
-                "resolution": resolution,
+                "resolution": resolution_val,
                 "buffer_second": buffer_second,
             })
-            time.sleep(1)
-            
-        # Save the data into a DataFrame
-        df = pd.DataFrame(data)
 
+            time.sleep(1)
+
+        # Convert to DataFrame
+        df = pd.DataFrame(data)
         return df
 
     except Exception as e:
