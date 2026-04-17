@@ -23,7 +23,7 @@ def fetch_video_buffer(url, minutes, resolution):
         # Initialize driver settings
         driver = get_driver_settings(url)
         iframe = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "iframe"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#player"))
         )
 
         # Switch to the YouTube iframe and play the video
