@@ -25,9 +25,26 @@ def fetch_video_buffer(url, minutes, resolution):
         iframe = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "#player"))
         )
-
+        
         # Switch to the YouTube iframe and play the video
         driver.switch_to.frame(iframe)
+        
+        print("\n--- DEBUG INSIDE IFRAME ---")
+
+        print("URL:", driver.current_url)
+
+        print("\n[HTML snippet]")
+        print(driver.page_source[:2000])
+
+        buttons = driver.find_elements(By.TAG_NAME, "button")
+        print(f"\nButtons found: {len(buttons)}")
+
+        for b in buttons:
+            print("->", b.get_attribute("aria-label"))
+
+        videos = driver.find_elements(By.TAG_NAME, "video")
+        print(f"\nVideos found: {len(videos)}")
+        
         
         play_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label*='Play']")
