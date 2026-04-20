@@ -5,7 +5,7 @@ import pandas as pd
 import traceback
 import time
 from browser_settings import get_driver_settings
-from youtube_iframe import change_resolution
+from youtube_iframe import change_resolution # fix resolution otherwise it goes in auto
 import os
 import time
 import sys
@@ -24,33 +24,20 @@ def fetch_video_buffer(url, minutes, resolution):
         # Initialize driver
         driver = get_driver_settings(url)
 
-        # Switch to YouTube iframe safely
+        # Switch to YouTube iframe
         WebDriverWait(driver, 20).until(
             EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "#player"))
         )
 
-        # Wait until video element is present
-        WebDriverWait(driver, 20).until(
-            lambda d: d.execute_script(
-                "return document.querySelector('video') !== null"
-            )
+        # Already inside the #player iframe at this point
+        play_btn = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".ytmCuedOverlayPlayButton"))
         )
+        play_btn.click()
 
-        print("\n[INFO] Video element detected")
-
-        # Play video via JavaScript (works everywhere)
-        driver.execute_script("""
-            const v = document.querySelector('video');
-            if (v) {
-                v.muted = true;   // avoid autoplay restrictions
-                v.play();
-            }
-        """)
-
-        time.sleep(2)
         
         # Change to the selected resolution -> TO FIX HERE
-        change_resolution(driver, start_time, resolution)
+        #change_resolution(driver, start_time, resolution)
         
         # Fetch YouTube buffer information
         end_time = time.time() + minutes * 60

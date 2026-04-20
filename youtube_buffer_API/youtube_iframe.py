@@ -20,7 +20,7 @@ def change_resolution(driver, start_time, resolution):
 
     print(f"RUN: {start_time} | Selecting best available resolution")
 
-    # --- 1) Force controls to appear ---
+    
     try:
         actions = ActionChains(driver)
         actions.move_by_offset(10, 10).perform()
@@ -28,8 +28,10 @@ def change_resolution(driver, start_time, resolution):
     except:
         pass
 
-    # --- 2) Find settings button (C3 + fallback) ---
+    # selector
     settings_selectors = [
+        ".player-settings-icon > c3-icon:nth-child(1) > span:nth-child(1) > div:nth-child(1)"
+        ".player-settings-icon"
         "button.player-settings-icon",
         "button[aria-label='Playback Settings']",
         ".player-settings-icon",
@@ -58,7 +60,7 @@ def change_resolution(driver, start_time, resolution):
     sb.click()
     time.sleep(0.4)
 
-    # --- 3) Open quality submenu (C3 UI) ---
+    # select desired resolution
     try:
         quality_button = WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((
@@ -74,7 +76,7 @@ def change_resolution(driver, start_time, resolution):
 
     time.sleep(1.2)
 
-    # --- 4) Select resolution from C3 bottom-sheet ---
+
     for target in resolutions_priority:
         try:
             res_option = driver.find_element(
