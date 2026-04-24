@@ -22,24 +22,18 @@ def fetch_video_buffer(url, minutes, resolution):
         
         # Initialize driver settings
         driver = get_driver_settings(url)
-        iframe = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "iframe"))
-        )
+        
+        time.sleep(10)
 
-        # Switch to the YouTube iframe and play the video
-        driver.switch_to.frame(iframe)
-        
-        play_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((
-            By.XPATH,"//button[contains(@aria-label, 'Play')]"
-        )))
-        
-        time.sleep(3)
-        play_button.click()
+        play_btn = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.ID, "playBtn"))
+        )
+        play_btn.click()
+
         time.sleep(2)
         
         # Change to the selected resolution
-        change_resolution(driver, start_time, resolution)
+        #change_resolution(driver, start_time, resolution) TO REFACT
         
         # Fetch YouTube buffer information
         end_time = time.time() + minutes * 60
@@ -124,7 +118,7 @@ if __name__ == "__main__":
         address = sys.argv[1]
         url = f"http://{address}:8000/"
         resolution = "medium" 
-        minutes = 3
+        minutes = 10
         df = fetch_video_buffer(url, minutes ,resolution)
         print(df)
         # Save data in txt format
